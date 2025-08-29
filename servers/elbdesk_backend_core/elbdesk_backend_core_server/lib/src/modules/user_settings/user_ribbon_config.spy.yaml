@@ -1,0 +1,6 @@
+class: UserRibbonConfigDTO
+
+
+fields:
+  useSmallRibbons: bool, default=false
+  hideRibbons: bool, default=false

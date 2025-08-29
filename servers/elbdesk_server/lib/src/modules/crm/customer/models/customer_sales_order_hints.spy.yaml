@@ -1,0 +1,16 @@
+# The Customer DTO class
+
+class: CustomerSalesOrderHintsDTO
+
+
+fields:
+
+  firstReference: String
+  secondReference: String
+  orderNumber: String
+  keywords: String
+  
+  
+
+
+ 

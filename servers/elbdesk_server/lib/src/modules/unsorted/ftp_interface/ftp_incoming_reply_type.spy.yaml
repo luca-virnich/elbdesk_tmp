@@ -1,0 +1,7 @@
+enum: FTPIncomingReplyType
+serialized: byName
+
+values:
+  - ftp0
+  - ftp1
+  - ftp2

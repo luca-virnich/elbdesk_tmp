@@ -1,0 +1,14 @@
+# BearerTypeSheetFedPressFixedPlateDTO
+# Defines the Sheet Fed Press Fixed Plate Bearer model
+class: BearerTypeSheetFedPressFixedPlateDTO
+table: prepress_bearer_type_sheet_fed_press_fixed_plate
+
+fields:
+  # Name of the machine control file
+  machineControlFile: String?
+
+  # Type of raster fields used
+  rasterFieldType: String?
+
+  # Type of registration mark used
+  registrationMarkType: String?

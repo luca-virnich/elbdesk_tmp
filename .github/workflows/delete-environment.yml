@@ -1,0 +1,66 @@
+name: Delete Environment
+run-name: Delete ${{ inputs.environment }} environment containers and volumes
+
+# ---
+# This workflow deletes:
+# - All containers with the specified environment suffix
+# - Associated volumes
+# - Shows remaining containers and volumes for verification
+# 
+# **Use with caution - this action cannot be undone!**
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to delete'
+        type: choice
+        required: true
+        default: 'test'
+        options:
+          - 'test'
+          - 'staging'
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install ssh keys
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: "ghcr.io"
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete containers and volumes
+        run: |
+          # Stop and remove containers
+          docker stop coe_elbdesk_app-${{ inputs.environment }} coe_elbdesk_cloud-${{ inputs.environment }} coe_elbdesk_cloud-${{ inputs.environment }}-postgres || true
+          docker rm -f coe_elbdesk_app-${{ inputs.environment }} coe_elbdesk_cloud-${{ inputs.environment }} coe_elbdesk_cloud-${{ inputs.environment }}-postgres || true
+          
+          # Remove volumes (match the exact name pattern we use)
+          # docker volume rm ${{ inputs.environment }}_database_data || true
+          
+          # Or if you want to be more thorough and catch any volumes with the environment name:
+          docker volume rm $(docker volume ls -q -f name=${{ inputs.environment }}_*) || true
+
+          # Remove orphaned volumes (volumes not attached to any container)
+          docker volume prune -f
+          
+          # List remaining containers and volumes for verification
+          echo "Remaining containers:"
+          docker ps -a
+          echo "Remaining volumes:"
+          docker volume ls
+        env:
+          DOCKER_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf ~/.ssh

@@ -1,0 +1,34 @@
+# System File
+#
+# Represents a system file
+class: SystemFileDTO
+fields:
+  id: String
+
+  # File information
+  path: String
+  filename: String
+
+  # Used if we moved the file to a different location
+  originalPath: String?
+  
+  # Attachment type
+  attachmentType: String?  # general, email, order
+  
+  # File metadata
+  fileSize: int?
+  mimeType: String?
+  
+  # File copying status
+  isCopiedToOutputPath: bool
+  
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?

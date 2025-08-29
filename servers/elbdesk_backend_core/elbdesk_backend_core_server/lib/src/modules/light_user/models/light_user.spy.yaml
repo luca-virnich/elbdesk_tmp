@@ -1,0 +1,21 @@
+# The LightUserDTO class
+#
+# Represents a light user and all of his related data
+#
+class: LightUserDTO
+table: ed_user_light_user
+
+fields:
+  # person related fields
+  email: String
+  fullName: String
+  initials: String
+  isActive: bool
+  imageUrl: String
+
+  userInfo: module:auth:UserInfo?, relation(optional)
+
+indexes:
+  user_info_id_unique_idx:
+    fields: userInfoId
+    unique: true

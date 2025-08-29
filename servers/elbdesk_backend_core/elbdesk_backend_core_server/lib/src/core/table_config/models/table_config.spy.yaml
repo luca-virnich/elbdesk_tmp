@@ -1,0 +1,14 @@
+# There represents a configuration for a table attached to the user and the tableType.
+class: TableConfig
+table: ed_core_table_config
+
+fields:
+  
+  componentIdentifier: String
+  tableId: String
+  userId: int?, scope=serverOnly
+  tableFieldConfig: List<TableFieldConfig>
+  filter: Filter?
+  isPrimary: bool
+  name: String
+  sort: Sort?

@@ -1,0 +1,10 @@
+# Font Info DTO
+# Parsed from artwork XML file
+# Used in QuarantineArtworkXmlDataDTO
+class: FontInfoDTO
+fields:
+  name: String
+  type: String
+  location: String
+  fontFile: String?
+  protection: bool

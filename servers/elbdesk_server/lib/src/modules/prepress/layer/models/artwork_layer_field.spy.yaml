@@ -1,0 +1,15 @@
+# ArtworkLayerField
+#
+# Lists the fields that can be used to sort and filter the ArtworkLayer Table
+#
+enum: ArtworkLayerField
+serialized: byName
+
+values:
+  - id
+  - layerType
+  - layerName
+  - printable
+  - locked
+  - actions
+  - move

@@ -1,0 +1,15 @@
+enum: ShippingMethodField
+serialized: byName
+
+values:
+  - id
+  - code
+  - description
+  - isActive
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft 

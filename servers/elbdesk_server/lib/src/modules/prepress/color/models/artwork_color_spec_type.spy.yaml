@@ -1,0 +1,20 @@
+# Artwork Color Spec Type
+#
+# Defines possible types of the ArtworkColor object
+#
+# TODO(mh): Define exactly what this is. I'm currently not sure if these are the material of the plates or sth else
+#
+# See [ArtworkColorDTO] for more details
+#
+enum: ArtworkColorSpecType
+serialized: byName
+
+values:
+  # Standard
+  - standard
+  # Kodak
+  - kodak
+  # Quartz
+  - quartz
+  # VerarbeitungsSchritt - Processing Step
+  - verarbeitungsSchritt

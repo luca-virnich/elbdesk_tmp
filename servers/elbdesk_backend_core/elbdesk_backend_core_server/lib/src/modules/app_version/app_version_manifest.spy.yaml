@@ -1,0 +1,16 @@
+
+class: AppVersionManifest
+
+
+fields:
+  version: String
+  url: String
+  releaseDate: String
+  runMode: String
+  commit: String
+  windowsVersion: String
+  patch: int
+  minor: int
+  major: int
+
+    

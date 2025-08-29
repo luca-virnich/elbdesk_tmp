@@ -1,0 +1,14 @@
+# BearerTypeOffsetPressFixedPlateDTO
+# Defines the Offset Press Fixed Plate Bearer model
+class: BearerTypeOffsetPressFixedPlateDTO
+table: prepress_bearer_type_offset_press_fixed_plate
+
+fields:
+  # Name of the machine control file
+  machineControlFile: String?
+
+  # Type of raster fields used
+  rasterFieldType: String?
+
+  # Type of registration mark used
+  registrationMarkType: String?

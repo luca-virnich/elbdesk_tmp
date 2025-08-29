@@ -1,0 +1,10 @@
+# Contact Type
+#
+# Defines possible types of the Contact object
+#
+enum: ContactType
+serialized: byName
+
+values:
+  - company
+  - person

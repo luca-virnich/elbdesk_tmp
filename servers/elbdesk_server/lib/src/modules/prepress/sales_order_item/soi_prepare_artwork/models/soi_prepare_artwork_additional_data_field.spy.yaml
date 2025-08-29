@@ -1,0 +1,11 @@
+
+enum: SoiPrepareArtworkAdditionalDataField
+serialized: byName
+
+values:
+  - artworkCustomId
+  - customerId
+  - status
+  - artworkWidth
+  - artworkHeight
+  

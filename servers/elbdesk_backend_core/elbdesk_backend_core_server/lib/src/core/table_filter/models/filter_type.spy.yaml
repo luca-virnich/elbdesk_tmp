@@ -1,0 +1,25 @@
+# Filter Type
+#
+# Lists the available types for a filter
+# Each type represents a different way to filter the filters value
+#
+enum: FilterType
+serialized: byName
+
+values:
+  - equal
+  - notEqual
+  - greaterThan
+  - greaterThanOrEqual
+  - lessThan
+  - lessThanOrEqual
+  - between
+  - notBetween
+  - inSet
+  - notInSet
+  - inList
+  - notInList
+  - like
+  - notLike
+  - iLike
+  - notILike

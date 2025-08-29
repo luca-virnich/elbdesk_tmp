@@ -1,0 +1,16 @@
+
+enum: SoiStepAndRepeatField
+serialized: byName
+
+values:
+  - artworks
+  - salesOrder
+  - status
+  - description
+  - soiId
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft

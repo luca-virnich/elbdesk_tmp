@@ -1,0 +1,10 @@
+# Spotlight Item
+#
+# Represents an item that can be displayed in the spotlight search functionality
+#
+class: SpotlightItem
+fields:
+  primaryKey: int
+  title: String
+  description: String
+  type: SpotlightType

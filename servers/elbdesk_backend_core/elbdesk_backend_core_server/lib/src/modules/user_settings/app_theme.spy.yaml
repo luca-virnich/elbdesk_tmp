@@ -1,0 +1,16 @@
+# AppTheme
+#
+# Lists the different themes that can be used in the app
+# Can be set by the user -> Saved in the UserSettings
+#
+# See [UserSettingsDTO] for more details
+#
+enum: AppTheme
+serialized: byName
+
+values:
+  - system
+  - light
+  - dark
+  - dracula
+  - windows11

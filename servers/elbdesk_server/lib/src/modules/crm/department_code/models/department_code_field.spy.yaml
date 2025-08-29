@@ -1,0 +1,16 @@
+
+enum: DepartmentCodeField
+serialized: byName
+
+values:
+  - id
+  - code
+  - description
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

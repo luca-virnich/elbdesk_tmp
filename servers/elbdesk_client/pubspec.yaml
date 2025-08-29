@@ -1,0 +1,30 @@
+name: elbdesk_client
+description: Starting point for a Serverpod client.
+
+environment:
+  sdk: ^3.6.0
+resolution: workspace
+
+dependencies:
+  serverpod_client: 2.9.1
+  serverpod_auth_client: 2.9.1
+  elbdesk_backend_core_client:
+    path: ../elbdesk_backend_core/elbdesk_backend_core_client
+    
+
+  ahoi_file_storage_client:
+    git:
+      url: https://github.com/App-Ahoi/ahoi_file_storage_client.git
+      ref: f7d8414aadb161b9d4fddc214d00fbc39764ae59
+
+# dependency_overrides:
+#   serverpod_client:
+#     git:
+#       url: https://github.com/App-Ahoi/serverpod.git
+#       path: packages/serverpod_client
+#       ref: b4e9d4ada23f2d601dce22cdd08ec2a9434d2f27
+#   serverpod_auth_client:
+#     git:
+#       url: https://github.com/App-Ahoi/serverpod.git
+#       path: modules/serverpod_auth/serverpod_auth_client
+#       ref: b4e9d4ada23f2d601dce22cdd08ec2a9434d2f27

@@ -1,0 +1,25 @@
+# The table fields of an artwork code
+enum: ArtworkCodeField
+serialized: byName
+
+values:
+  - id
+  - artwork
+  - value
+  - description
+  - code2of5
+  - codeAztec
+  - codeTemplate
+
+  - barWidthReduction
+  - deviceCompensation
+  - narrowBarWidth
+  - aspectRatio
+  
+  # Meta information
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  

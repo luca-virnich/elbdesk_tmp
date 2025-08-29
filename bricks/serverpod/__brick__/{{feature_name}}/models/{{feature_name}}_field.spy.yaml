@@ -1,0 +1,19 @@
+# {{#pascalCase}}{{feature_name}}{{/pascalCase}} Field
+# 
+# A list of fields that can be used to filter and sort the {{#pascalCase}}{{feature_name}}{{/pascalCase}} entity
+enum: {{#pascalCase}}{{feature_name}}{{/pascalCase}}Field
+serialized: byName
+
+values:
+  - id
+  - name
+  - description
+
+  # Meta
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - isDraft
+  - deletedAt 
+  

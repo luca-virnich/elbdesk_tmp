@@ -1,0 +1,10 @@
+enum: ArtworkQuarantineGroupStatus
+
+serialized: byName
+
+values:
+ - open
+ - todo
+ - inUse
+ - done
+ - canceled

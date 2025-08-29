@@ -1,0 +1,18 @@
+
+enum: LanguageCodeField
+serialized: byName
+
+values:
+  - id
+  - code
+  - languageName
+  - isPrimary
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  
+  

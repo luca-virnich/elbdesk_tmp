@@ -1,0 +1,8 @@
+
+enum: SoiRequestArtworkApprovalType
+serialized: byName
+
+values:
+ - digital
+ - proof
+ 

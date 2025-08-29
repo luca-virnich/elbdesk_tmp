@@ -1,0 +1,11 @@
+
+enum: SalesOrderAdditionalDataField
+serialized: byName
+
+values:
+  - customerName
+  - customId
+  - status
+  - keywords
+  
+  

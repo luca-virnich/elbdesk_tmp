@@ -1,0 +1,37 @@
+class: SoiConsultingDTO
+table: ed_prepress_soi_consulting
+fields:
+
+  # The artwork associated with this soi prepare artwork
+  
+
+  # The parent sales order item
+  salesOrderItem: SalesOrderItemDTO?, relation
+
+  text: String
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+# indexes:
+#   soi_consulting_sales_order_item_idx:
+#     fields: salesOrderItemId
+#     unique: true
+  
+      

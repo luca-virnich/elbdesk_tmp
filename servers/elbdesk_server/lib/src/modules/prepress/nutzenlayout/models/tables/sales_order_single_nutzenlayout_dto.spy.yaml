@@ -1,0 +1,27 @@
+class: SalesOrderSingleNutzenlayoutDTO
+table: ed_prepress_sales_order_single_nutzenlayout
+fields:
+  
+  salesOrder: SalesOrderDTO?, relation
+  nutzenlayout: NutzenlayoutDTO?, relation
+  artworks: List<SalesOrderSingleNutzenlayoutArtworkJT>?, relation(name=sales_order_single_nutzenlayout_artwork, optional)
+  drucklayouts: List<DrucklayoutSingleNutzenlayoutJT>?, relation(name=single_nutzenlayout_drucklayout, optional)
+
+ # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?

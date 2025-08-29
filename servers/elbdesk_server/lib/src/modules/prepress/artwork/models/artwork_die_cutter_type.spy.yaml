@@ -1,0 +1,8 @@
+
+enum: ArtworkDieCutterType
+serialized: byName
+
+values:
+  - circle
+  - square
+  - custom

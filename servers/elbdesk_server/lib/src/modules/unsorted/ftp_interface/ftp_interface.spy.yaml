@@ -1,0 +1,46 @@
+class: FTPInterfaceDTO
+table: prepress_ftp_interface
+
+fields:
+
+  type: FTPType
+  description: String
+  host: String
+  user: String
+  password: String
+  port: int
+  # Dateneingang
+  dataInput: String
+  extractZip: bool
+  workflowStart: String
+  incomingReplyType: FTPIncomingReplyType
+  incomingConfirmationReference: String
+  incomingConfirmation: String
+  incomingConfirmationEmail: String
+  incomingClientConfirmationReference: String
+  incomingClientConfirmation: String
+  incomingClientConfirmationEmail: String
+  # Datenausgang
+  dataOutput: String
+  
+
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+

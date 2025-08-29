@@ -1,0 +1,57 @@
+networks:
+  # explicitly setting up a docker virutal network for the serverpod services
+  # by default, a network is implicitly created for each compose file
+  # this makes it easier to connect to any other docker containers,
+  # i.e. when using a separate docker compose to setup grafana, prometheus, etc.
+  serverpod-network:
+    name: serverpod-network
+    driver: bridge
+    # external: true
+
+services:
+  traefik:
+    restart: always
+    image: traefik:v3.0
+    command:
+      - "--api.dashboard=true"
+      - "--log.filepath=/var/log/traefik.log"
+      - "--log.level=DEBUG"  # Add more detailed logging
+      # - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./letsencrypt:/letsencrypt"
+    labels:
+      # Dashboard
+      - "traefik.http.routers.traefik.rule=Host(`traefik.coe.elbdesk.cloud`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.middlewares=authtraefik@docker"
+      - "traefik.http.middlewares.authtraefik.basicauth.users=appahoiadmin:$$apr1$$XGRzog7d$$9iRw.2xEw7sPXKOdAwr5S0"
+      # Catch-all for unspecified subdomains
+      # - "traefik.http.routers.catchall.rule=HostRegexp(`{catchall:.+}`)"
+      # - "traefik.http.routers.catchall.entrypoints=websecure"
+      # - "traefik.http.routers.catchall.tls.certresolver=myresolver"
+      # - "traefik.http.routers.catchall.service=dummy-service"
+      # - "traefik.http.routers.catchall.middlewares=catchall-404"
+      # Error pages middleware
+      # - "traefik.http.middlewares.catchall-404.errorpage.status=404"
+      # - "traefik.http.middlewares.catchall-404.errorpage.service=default-error-service"
+      # - "traefik.http.middlewares.catchall-404.errorpage.query=/404.html"
+    # depends_on:
+    #   - postgres
+    #   - serverpod
+    networks:
+      - serverpod-network
+
+volumes:
+  database_data:

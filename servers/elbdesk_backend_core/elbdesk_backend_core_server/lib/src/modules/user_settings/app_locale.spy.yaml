@@ -1,0 +1,14 @@
+# AppLocale
+#
+# Lists the different locales that can be used in the app
+# Can be set by the user -> Saved in the UserSettings
+#
+# See [UserSettingsDTO] for more details
+#
+enum: AppLocale
+serialized: byName
+
+values:
+  - auto
+  - en
+  - de

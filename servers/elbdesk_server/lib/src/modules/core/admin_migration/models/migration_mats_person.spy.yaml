@@ -1,0 +1,61 @@
+# Migration Mats Person
+#
+# This table holds imported person data from MATS system
+class: MigrationMatsPersonDTO
+table: ed_migration_mats_person
+
+fields:
+  # Contact Information
+  idContact: String?
+  nameFirst: String?
+  nameLast: String?
+  anrede: String?
+  titel: String?
+  department: String?
+  position: String?
+  anredeLang: String?
+  idAccount: String?
+  isPerson: bool
+
+  # Address Information
+  primaryStreet1: String?
+  primaryStreet2: String?
+  primaryPostalCode: String?
+  primaryCity: String?
+  primaryCountry: String?
+  primaryState: String?
+
+  # Contact Details
+  telefon1: String?
+  telefon2: String?
+  mobilTelefon: String?
+  fax: String?
+  email: String?
+
+  # Status and Work Information
+  status: String?
+  wK: String?
+  wWf: String?
+  wFp: String?
+  contactInfor: String?
+
+  isMigrated: bool
+
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String? 

@@ -1,0 +1,23 @@
+# PrepressColorPaletteField
+#
+# The fields that can be used to sort and filter the PrepressColorPalette Table
+#
+# See [PrepressColorPaletteDTO] for more details
+#
+enum: PrepressColorPaletteField
+serialized: byName
+
+values:
+  - id
+  - paletteName
+  - description
+  - customer
+  - customerId
+  
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

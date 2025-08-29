@@ -1,0 +1,12 @@
+
+enum: NutzenlayoutLaufrichtung
+serialized: byName
+
+values:
+  - footForward
+  - headForward
+  - wordStartForward
+  - wordEndForward
+  - mixed
+  
+

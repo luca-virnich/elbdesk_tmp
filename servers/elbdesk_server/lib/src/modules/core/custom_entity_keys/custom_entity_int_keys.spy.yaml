@@ -1,0 +1,17 @@
+# Custom Entity Int Keys
+#
+# Used to generate unique keys for custom entities.
+#
+# The table is used to store the latest key for specific entity types. 
+# Example: Product Number -> Specific ID for Products
+#
+# With this we can define a specific number range for an entity id
+#
+class: CustomEntityIntKeys
+table: ed_core_custom_entity_int_keys
+
+fields:
+  tableType: TableType
+  latestNumber: int
+
+    

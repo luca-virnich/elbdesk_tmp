@@ -1,0 +1,34 @@
+{
+  "@@locale": "de",
+  
+  "minimizeTooltip": "Minimieren",
+  "maximizeTooltip": "Maximieren",
+  "restoreTooltip": "Wiederherstellen",
+  "closeTooltip": "Schließen",
+  "minimizeAllTooltip": "Alle Fenster minimieren",
+  "restoreAllTooltip": "Alle Fenster wiederherstellen",
+  "scrollLeftTooltip": "Nach links scrollen",
+  "scrollRightTooltip": "Nach rechts scrollen",
+  "showWindowOverviewTooltip": "Fensterübersicht anzeigen",
+  "closeOverviewTooltip": "Übersicht schließen",
+  "noOpenWindows": "Keine offenen Fenster",
+  "minimizeAllLabel": "Alle minimieren",
+  "windowsLabel": "Fenster",
+  "menuLabel": "Menü",
+  "allWindowsTitle": "Alle Fenster",
+  "windowCount": "{count, plural, =0{No windows} =1{1 window} other{{count} windows}}",
+  "@windowCount": {
+    "description": "Count of windows",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "compact"
+      }
+    }
+  },
+  "minimizedLabel": "Minimiert",
+  "navigationTitle": "Navigation",
+  "expandTooltip": "Erweitern",
+  "collapseTooltip": "Reduzieren",
+  "errorTitle": "Fehler"
+}

@@ -1,0 +1,18 @@
+class: EntityNoteNotificationDTO
+table: ed_core_entity_note_notification
+fields:
+  tableType: String
+  entityId: int
+  label: String
+  message: String
+  isUpdate: bool
+  hardcodedSender: String?
+  
+  createdAt: DateTime
+  readAt: DateTime?
+  clearedAt: DateTime?
+  parentId: int?
+  additionalData: String?
+  senderId: int?
+  userId: int?
+  noteId: int

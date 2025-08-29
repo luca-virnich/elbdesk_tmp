@@ -1,0 +1,72 @@
+# Artwork Master
+# 
+# A master entity for an artwork
+# The master is used to always hold the latest state of an artwork
+# if a "child" artwork is changed, the master will be updated to reflect the changes
+
+# -> The master can always be used to create a new artwork -> Single source of truth
+class: ArtworkMasterDTO
+table: ed_prepress_artwork_master
+fields:
+  #general
+  description: String
+  customer: CustomerDTO?, relation
+  version: int
+  reference: String
+  
+
+  
+  layerId: int
+  artworkQuarantineId: int?
+
+  product: ProductMasterDTO?, relation(optional,name=product_master_artwork_master)
+  codes: List<ArtworkCodeDTO>
+
+  # ArtworkType Enum as String
+  artworkType: String
+
+  # ArtworkPrintProcessType Enum as String
+  printProcessType: String
+
+  width: double
+  height: double
+  cornerRadius: double?
+
+  # Die Cutter Type Enum as String
+  dieCutterType: String?
+
+
+  # Trapping
+  trapping: TrappingDTO
+
+  layers: List<ArtworkLayerDTO>
+
+  # Bleed (Anschnitt)
+  anschnitt: double
+
+  # Screening lineature (Rasterangaben)
+  colors: List<ArtworkColorDTO>
+  
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+indexes:
+  artwork_master_quarantine_idx:
+    fields: artworkQuarantineId
+    unique: true

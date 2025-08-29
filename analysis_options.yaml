@@ -1,0 +1,6 @@
+include: package:elbdesk_lints/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - 'bricks/**'
+    - '**/__brick__/**'

@@ -1,0 +1,9 @@
+
+enum: NutzenlayoutType
+serialized: byName
+
+values:
+  - rotativ
+  - translativ
+  
+

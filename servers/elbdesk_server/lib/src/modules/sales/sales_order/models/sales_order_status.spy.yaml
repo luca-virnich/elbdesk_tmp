@@ -1,0 +1,10 @@
+enum: SalesOrderStatus
+
+serialized: byName
+
+values:
+ - preperation
+ - inProgress
+ - onHold
+ - completed
+ - canceled

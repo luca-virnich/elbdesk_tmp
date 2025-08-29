@@ -1,0 +1,20 @@
+enum: CompanyCompanyField
+serialized: byName
+
+values:
+  - id
+  - company
+  - employee
+  - jobTitle
+  - department
+  - active
+  - note
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  
+  - deletedAt
+  - isDraft
+  

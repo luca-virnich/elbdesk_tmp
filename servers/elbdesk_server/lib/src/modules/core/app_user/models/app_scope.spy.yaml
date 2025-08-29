@@ -1,0 +1,70 @@
+# App Scope
+#
+# Lists the available scopes for an app user
+#
+enum: AppScope
+serialized: byName
+
+values:
+  # Core
+  - superAdmin
+  - admin
+  - appUser
+  - serviceUser
+  - entityLog
+  - entityLock
+  - countryCode
+  - languageCode
+  - paymentCode
+  - salutationCode
+  - appClient
+  - jsonTemplate
+
+  # CRM
+  - crmAdmin
+  - contact
+  - contactPerson
+  - contactCompany
+  - customer
+  - customerContact
+  - customerContacts
+  - address
+  - companyEmployee
+  - departmentCode
+
+  # Sales
+  - salesOrder
+  - salesOrderStatus
+  - salesOrderItem
+
+  # Sales Order Item
+  - soiPrepareArtwork
+  - soiStepAndRepeat
+
+  # Prepress
+  - mopAdmin
+  - bearer
+  - printLayout
+  
+  - prepressColorPalette
+  - customerColorSpec
+  
+
+  # Artowrk
+  - artwork
+  - artworkMaster
+  - artworkTemplate
+  - artworkTemplatePreSelection
+  - artworkTemplateSelection
+  - artworkQuarantine
+  - artworkLayer
+  - artworkColor
+  - artworkLog
+
+  # Product
+  - product
+  - productMaster
+
+  # Automation
+  - automationEngine
+  

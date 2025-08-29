@@ -1,0 +1,8 @@
+enum: DashboardTileType
+serialized: byName
+
+values:
+  - recent_items
+  - assigned
+  - customer
+  - admin

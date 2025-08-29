@@ -1,0 +1,13 @@
+
+class: NutzenlayoutCellDTO
+
+fields:
+  
+  width: double
+  height: double
+  artworkId: int?
+  artworkMasterId: int?
+  laufrichtung: NutzenlayoutLaufrichtung
+  gapHorizontal: double
+
+

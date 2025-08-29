@@ -1,0 +1,12 @@
+# Artwork Code Type
+#
+# Defines possible artwork code types
+enum: ArtworkCodeType
+serialized: byName
+
+values:
+  - twoOf5
+  - aztec
+  - template
+  
+  

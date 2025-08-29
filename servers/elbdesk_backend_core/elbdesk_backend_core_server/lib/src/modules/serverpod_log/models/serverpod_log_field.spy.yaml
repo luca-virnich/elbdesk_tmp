@@ -1,0 +1,18 @@
+# Serverpod Log Field
+#
+# Lists the available fields of the ServerpodLogDTO
+#
+enum: ServerpodLogField
+serialized: byName
+
+values:
+  - id
+  - sessionLogId
+  - messageId
+  - reference
+  - serverId
+  - time
+  - logLevel
+  - message
+  - error
+  - stackTrace

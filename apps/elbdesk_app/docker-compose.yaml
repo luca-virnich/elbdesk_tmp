@@ -1,0 +1,23 @@
+networks:
+  default:
+    name: serverpod-network
+    external: true
+
+services:
+  app:
+    container_name: ${APP_NAME}-${ENV_NAME}
+    restart: always
+    image: ghcr.io/${GHCR_ORG}/${APP_NAME}_${ENV_NAME}:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app-${ENV_NAME}.rule=Host(`${APP_HOST}`)"
+      - "traefik.http.routers.app-${ENV_NAME}.entrypoints=websecure"
+      - "traefik.http.routers.app-${ENV_NAME}.service=app-${ENV_NAME}-service"
+      - "traefik.http.routers.app-${ENV_NAME}.tls.certresolver=myresolver"
+      - "traefik.http.services.app-${ENV_NAME}-service.loadbalancer.server.port=80"
+      
+      # - "traefik.http.middlewares.spa-${ENV_NAME}.replacepathregex.regex=^/.+$$"
+      # - "traefik.http.middlewares.spa-${ENV_NAME}.replacepathregex.replacement=/"
+      # - "traefik.http.middlewares.spa-${ENV_NAME}.replacepathregex.regex=^(?!/flutter_bootstrap\\.js$|/assets/|/favicon\\.ico$).*"
+      # - "traefik.http.middlewares.spa-${ENV_NAME}.replacepath.path=/"
+      # - "traefik.http.routers.app-${ENV_NAME}.middlewares=spa-${ENV_NAME}"

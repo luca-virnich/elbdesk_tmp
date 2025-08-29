@@ -1,0 +1,20 @@
+enum: JsonTemplateField
+serialized: byName
+
+values:
+  - id
+  - description
+  - type
+  - json
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  
+  
+  - editingSession
+  - deletedBy
+  - deletedAt
+  
+  - isDraft
+  

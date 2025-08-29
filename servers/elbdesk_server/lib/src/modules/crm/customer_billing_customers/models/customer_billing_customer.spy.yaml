@@ -1,0 +1,20 @@
+# Customer Billing Customer
+#
+# A CustomerBillingCustomer resembles a Customer that is a billing customer of an Order
+#
+# This is used if one customer sends an order, but wants to bill the products to another customer
+#
+class: CustomerBillingCustomerDTO
+table: ed_crm_customer_billing_customer
+
+fields:
+
+  customer: CustomerDTO?, relation
+  billingCustomer: CustomerDTO?, relation
+  
+  isPrimary: bool
+
+indexes:
+  customer_billing_customer_unique_idx:
+    fields: customerId, billingCustomerId
+    unique: true

@@ -1,0 +1,71 @@
+networks:
+  default:
+    name: serverpod-network
+    external: true
+
+services:
+  postgres:
+    container_name: ${SERVER_NAME}-${ENV_NAME}-postgres
+    # platform: linux/arm64
+    restart: always
+    image: postgres:16.3
+    labels:
+      - "traefik.enable=false" # We typically don't expose databases externally via HTTP
+    ports:
+      - $DATABASE_PORT # You should have a firewall in place that DOES NOT allow acces from the internet on this port. However on the host machine, we need access to it.
+    environment:
+      POSTGRES_DB: $DATABASE_NAME
+      POSTGRES_USER: $DATABASE_USER
+      POSTGRES_PASSWORD: $DATABASE_PASSWORD
+    volumes:
+      - database_data:/var/lib/postgresql/${SERVER_NAME}_${ENV_NAME}/data
+
+  serverpod:
+    container_name: ${SERVER_NAME}-${ENV_NAME}
+    # platform: linux/arm64
+    depends_on:
+      - postgres
+    restart: always
+    image: ghcr.io/${GHCR_ORG}/${SERVER_NAME}_${ENV_NAME}:latest
+    command:
+      [
+        "--mode",
+        "${ENV_NAME}",
+        "--server-id",
+        "default",
+        "--logging",
+        "verbose",
+        "--role",
+        "monolith",
+        "--apply-migrations",
+      ]
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.api-${ENV_NAME}.rule=Host(`${API_HOST}`)"
+      - "traefik.http.routers.api-${ENV_NAME}.entrypoints=websecure"
+      - "traefik.http.routers.api-${ENV_NAME}.service=api-${ENV_NAME}-service"
+      - "traefik.http.routers.api-${ENV_NAME}.tls.certresolver=myresolver"
+      - "traefik.http.services.api-${ENV_NAME}-service.loadbalancer.server.port=8080"
+      - "traefik.http.routers.api-${ENV_NAME}.middlewares=api-${ENV_NAME}-headers"
+      - "traefik.http.middlewares.api-${ENV_NAME}-headers.headers.customResponseHeaders.X-Robots-Tag=none,noindex,nofollow,noarchive,nosnippet,notranslate,noimageindex"
+
+      - "traefik.http.routers.insights-${ENV_NAME}.rule=Host(`${INSIGHTS_HOST}`)"
+      - "traefik.http.routers.insights-${ENV_NAME}.entrypoints=websecure"
+      - "traefik.http.routers.insights-${ENV_NAME}.service=insights-${ENV_NAME}-service"
+      - "traefik.http.routers.insights-${ENV_NAME}.tls.certresolver=myresolver"
+      - "traefik.http.services.insights-${ENV_NAME}-service.loadbalancer.server.port=8081"
+      - "traefik.http.routers.insights-${ENV_NAME}.middlewares=insights-${ENV_NAME}-headers"
+      - "traefik.http.middlewares.insights-${ENV_NAME}-headers.headers.customResponseHeaders.X-Robots-Tag=none,noindex,nofollow,noarchive,nosnippet,notranslate,noimageindex"
+
+      - "traefik.http.routers.web-${ENV_NAME}.rule=Host(`${WEB_HOST}`)"
+      - "traefik.http.routers.web-${ENV_NAME}.entrypoints=websecure"
+      - "traefik.http.routers.web-${ENV_NAME}.service=web-${ENV_NAME}-service"
+      - "traefik.http.routers.web-${ENV_NAME}.tls.certresolver=myresolver"
+      - "traefik.http.services.web-${ENV_NAME}-service.loadbalancer.server.port=8082"
+      - "traefik.http.routers.web-${ENV_NAME}.middlewares=web-${ENV_NAME}-headers"
+      - "traefik.http.middlewares.web-${ENV_NAME}-headers.headers.customResponseHeaders.X-Robots-Tag=none,noindex,nofollow,noarchive,nosnippet,notranslate,noimageindex"
+
+volumes:
+  database_data:
+    name: ${ENV_NAME}_database_data

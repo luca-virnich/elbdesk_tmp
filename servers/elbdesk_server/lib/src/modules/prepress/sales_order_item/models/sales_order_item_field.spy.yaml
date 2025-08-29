@@ -1,0 +1,16 @@
+
+enum: SalesOrderItemField
+serialized: byName
+
+values:
+  - salesOrderId
+  - salesOrderCustomId
+  - description
+  - billableTime
+  - status
+  - type
+  - soiTypePrimaryKey
+  - assignedUser
+  - customerName
+  - customId
+  - deadline

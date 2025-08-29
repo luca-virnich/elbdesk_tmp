@@ -1,0 +1,9 @@
+class: ArtworkQuarantineAnalysisDataDTO
+
+fields:
+  fileName: String?
+  analysisDate: DateTime?
+  note: String
+  width: double?
+  height: double?
+  colorSpecifications: List<ColorSpecificationDTO>

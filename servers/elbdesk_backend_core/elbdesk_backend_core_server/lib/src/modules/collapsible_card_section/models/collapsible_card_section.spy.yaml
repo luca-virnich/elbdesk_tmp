@@ -1,0 +1,6 @@
+class: CollapsibleCardSectionConfig
+table: ed_core_collapsible_card_section_config
+fields:
+  userId: int?, scope=serverOnly
+  configs: Map<String, bool>
+ 

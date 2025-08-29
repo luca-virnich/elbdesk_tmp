@@ -1,0 +1,111 @@
+name: elbdesk
+publish_to: none
+environment:
+  sdk: ^3.6.0
+  flutter: ">=3.32.5"
+workspace:
+  - packages/elbdesk_core
+  - packages/elbdesk_crm
+  - packages/elbdesk_lints
+  - packages/elbdesk_prepress
+  - packages/elbdesk_sales
+  - packages/elbdesk_ui
+  - packages/elbdesk_window_manager
+  - packages/elbdesk_platform_info
+  - servers/elbdesk_client
+  - servers/elbdesk_server
+  # - servers/elbdesk_server_core/elbdesk_server_core_server
+  # - servers/elbdesk_server_core/elbdesk_server_core_client
+  - apps/elbdesk_app
+  - packages/project_core
+
+dev_dependencies:
+  melos: 7.0.0-dev.7
+  msix: 3.16.8
+
+melos:
+  sdkPath: .fvm/flutter_sdk
+  name: elbdesk
+  command:
+    bootstrap:
+      dependencies:
+        flutter_hooks: 0.20.5
+        freezed_annotation: 2.4.4
+        hooks_riverpod: 2.6.1
+        riverpod: 2.6.1
+        json_annotation: 4.9.0
+        riverpod_annotation: 2.6.1
+        uuid: 4.5.1
+        xml: 6.5.0
+    
+        url_launcher: 6.3.0
+        collection: 1.19.1
+        shared_preferences: 2.5.1
+
+        serverpod: 2.9.1
+        serverpod_client: 2.9.1
+        serverpod_flutter: 2.9.1
+
+        serverpod_auth_server: 2.9.1
+        serverpod_auth_shared_flutter: 2.9.1
+        serverpod_auth_email_flutter: 2.9.1
+        serverpod_auth_client: 2.9.1
+
+        ahoi_file_storage:
+          git:
+            url: https://github.com/App-Ahoi/ahoi_file_storage.git
+            ref: 89eebe63bb12c7fc9b3e78e09035e733acfdaf76
+        ahoi_file_storage_client:
+          git:
+            url: https://github.com/App-Ahoi/ahoi_file_storage_client.git
+            ref: f7d8414aadb161b9d4fddc214d00fbc39764ae59
+
+        desktop_drop:
+          git:
+            url: https://github.com/App-Ahoi/flutter-plugins.git
+            path: packages/desktop_drop
+            ref: 243be7638de6245071e565e5a81935d73dda5bca 
+
+      dev_dependencies:
+        freezed: 2.5.8
+        json_serializable: 6.9.3
+        riverpod_generator: 2.6.4
+        build_runner: 2.4.14
+        msix: 3.16.8
+
+# dependency_overrides:
+#   serverpod_client:
+#     git:
+#       url: https://github.com/App-Ahoi/serverpod.git
+#       path: packages/serverpod_client
+#       ref: b4e9d4ada23f2d601dce22cdd08ec2a9434d2f27
+#   serverpod:
+#     git:
+#       url: https://github.com/App-Ahoi/serverpod.git
+#       path: packages/serverpod
+#       ref: b4e9d4ada23f2d601dce22cdd08ec2a9434d2f27
+#   serverpod_flutter:
+#     git:
+#       url: https://github.com/App-Ahoi/serverpod.git
+#       path: packages/serverpod_flutter
+#       ref: b4e9d4ada23f2d601dce22cdd08ec2a9434d2f27
+#   serverpod_auth_server:
+#     git:
+#       url: https://github.com/App-Ahoi/serverpod.git
+#       path: modules/serverpod_auth/serverpod_auth_server
+#       ref: b4e9d4ada23f2d601dce22cdd08ec2a9434d2f27
+#   serverpod_auth_shared_flutter:
+#     git:
+#       url: https://github.com/App-Ahoi/serverpod.git
+#       path: modules/serverpod_auth/serverpod_auth_shared_flutter
+#       ref: b4e9d4ada23f2d601dce22cdd08ec2a9434d2f27
+#   serverpod_auth_email_flutter:
+#     git:
+#       url: https://github.com/App-Ahoi/serverpod.git
+#       path: modules/serverpod_auth/serverpod_auth_email_flutter
+#       ref: b4e9d4ada23f2d601dce22cdd08ec2a9434d2f27
+#   serverpod_auth_client:
+#     git:
+#       url: https://github.com/App-Ahoi/serverpod.git
+#       path: modules/serverpod_auth/serverpod_auth_client
+#       ref: b4e9d4ada23f2d601dce22cdd08ec2a9434d2f27

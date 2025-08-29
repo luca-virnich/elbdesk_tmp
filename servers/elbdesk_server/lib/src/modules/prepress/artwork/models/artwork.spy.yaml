@@ -1,0 +1,72 @@
+# SalesOrderItem - Artwork
+# A item that is part of a SalesOrder
+# It can have multiple products and printLayouts
+class: ArtworkDTO
+table: ed_prepress_artwork
+fields:
+  #general
+  description: String
+  customer: CustomerDTO?, relation
+  artworkMaster: ArtworkMasterDTO?, relation
+  salesOrder: SalesOrderDTO?, relation
+  version: int
+  abzug: int
+  reference: String
+
+  isLocked: bool
+
+  # Die Cutter Type Enum as String
+  dieCutterType: String?
+
+  salesOrderSingleNutzenlayouts: List<SalesOrderSingleNutzenlayoutArtworkJT>?, relation(name=sales_order_artwork_single_nutzenlayout)
+  salesOrderMultiNutzenlayouts: List<SalesOrderMultiNutzenlayoutArtworkJT>?, relation(name=sales_order_artwork_multi_nutzenlayout)
+  
+  
+  layerId: int
+  artworkQuarantine: ArtworkQuarantineDTO?, relation(optional)
+
+  # ArtworkType Enum as String
+  artworkType: String
+  # ArtworkPrintProcessType Enum as String
+  printProcessType: String
+
+  product: ProductDTO?, relation(optional,name=product_artworks)
+  codes: List<ArtworkCodeDTO>
+  
+  width: double
+  height: double
+  cornerRadius: double?
+  
+  # Trapping
+  trapping: TrappingDTO
+
+  layers: List<ArtworkLayerDTO>
+
+  # Bleed (Anschnitt)
+  anschnitt: double
+
+  colors: List<ArtworkColorDTO>
+  
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+indexes:
+  artwork_sales_order_id_idx:
+    fields: artworkMasterId, salesOrderId
+    unique: true

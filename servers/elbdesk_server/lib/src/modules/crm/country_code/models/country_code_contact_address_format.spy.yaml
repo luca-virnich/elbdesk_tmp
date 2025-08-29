@@ -1,0 +1,10 @@
+
+enum: CountryCodeContactAddressFormat
+serialized: byName
+
+values:
+  - first
+  - afterCompanyName
+  - last
+  
+  

@@ -1,0 +1,55 @@
+# Company Employee Field
+#
+# A list of fields that can be used to filter and sort the Company Employee entity
+enum: CompanyEmployeeField
+serialized: byName
+
+values:
+  - id
+  - company
+  - employee
+  - position
+  - department
+  - active
+  - note
+
+  # for employee contact
+  - filterByEmployeeContactIdOrFullName
+  - employeeContactCustomId
+  - employeeContactFullName
+  - employeeContactAddress
+  - employeeContactAddress2
+  - employeeContactPostCode
+  - employeeContactCity
+  - employeeContactState
+  - employeeContactPhone
+  - employeeContactEmail
+  - employeeContactMobile
+  - employeeContactCountryCode
+  - employeeContactLanguageCode
+
+  # for company contact
+  - filterByCompanyContactIdOrFullName
+  - companyContactCustomId
+  - companyContactFullName
+  - companyContactAddress
+  - companyContactAddress2
+  - companyContactPostCode
+  - companyContactCity
+  - companyContactState
+  - companyContactPhone
+  - companyContactEmail
+  - companyContactMobile
+  - companyContactCountryCode
+  - companyContactLanguageCode
+
+  # To create delete button (From department)
+  - actions
+  
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

@@ -1,0 +1,10 @@
+export 'config/{{#snakeCase}}{{feature_name}}{{/snakeCase}}_table_default_columns.dart';
+export 'config/floating_{{#snakeCase}}{{feature_name}}{{/snakeCase}}_window_data.dart';
+export 'extensions/{{#snakeCase}}{{feature_name}}{{/snakeCase}}_field_ext.dart';
+export 'floatings/floating_{{#snakeCase}}{{feature_name}}{{/snakeCase}}_card.dart';
+export 'logic/{{#snakeCase}}{{feature_name}}{{/snakeCase}}_provider.dart';
+export 'logic/{{#snakeCase}}{{feature_name}}{{/snakeCase}}_state.dart';
+export 'models/{{#snakeCase}}{{feature_name}}{{/snakeCase}}.dart';
+export 'repositories/{{#snakeCase}}{{feature_name}}{{/snakeCase}}_repository.dart';
+export 'widgets/{{#snakeCase}}{{feature_name}}{{/snakeCase}}_card/{{#snakeCase}}{{feature_name}}{{/snakeCase}}_card.dart';
+export 'widgets/{{#snakeCase}}{{feature_name}}{{/snakeCase}}_table.dart';

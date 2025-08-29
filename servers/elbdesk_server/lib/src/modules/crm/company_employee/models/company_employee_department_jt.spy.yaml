@@ -1,0 +1,14 @@
+# Company Employee Department Junction Table
+#
+# Used to link CompanyEmployees to CompanyDepartments in a many:many relationship.
+# This allows employees to belong to multiple departments and departments to have multiple employees.
+#
+class: CompanyEmployeeDepartmentJT
+table: jt_company_employee_department
+fields:
+  companyEmployee: CompanyEmployeeDTO?, relation(name=company_employee_department)
+  companyDepartment: CompanyDepartmentDTO?, relation(name=company_department_employee)
+indexes:
+  company_employee_department_index_idx:
+    fields: companyEmployeeId, companyDepartmentId
+    unique: true 

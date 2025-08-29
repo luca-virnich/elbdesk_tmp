@@ -1,0 +1,10 @@
+
+enum: SoiRequestArtworkApprovalAdditionalDataField
+serialized: byName
+
+values:
+  - artworkCustomId
+  - customerId
+  - status
+  
+  

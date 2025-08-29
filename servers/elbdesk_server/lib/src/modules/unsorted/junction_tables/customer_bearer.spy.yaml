@@ -1,0 +1,11 @@
+# Bearer Customer Relation Junction Table
+# This Junction Table is used to define the relation between a Bearer and a Customer
+class: BearerCustomerRelation
+table: prepress_bearer_customer_relation
+fields:
+  bearer: BearerDTO?, relation(name=customer_bearer, onDelete=Cascade)
+  customer: CustomerDTO?, relation(name=bearer_customer, onDelete=Cascade)
+indexes:
+  bearer_customer_index_idx:
+    fields: bearerId, customerId
+    unique: true

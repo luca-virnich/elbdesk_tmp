@@ -1,0 +1,23 @@
+# Drucklayout Field
+# 
+# A list of fields that can be used to filter and sort the Drucklayout entity
+enum: DrucklayoutField
+serialized: byName
+
+values:
+  - id
+  - title
+  - description
+  - customerId
+
+  - drucklayoutPreSelection
+  - drucklayoutSelection
+
+  # Meta
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - isDraft
+  - deletedAt 
+  

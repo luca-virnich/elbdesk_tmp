@@ -1,0 +1,10 @@
+
+enum: NutzenlayoutUnitSystem
+serialized: byName
+
+values:
+  - millimeter
+  - inch
+  - teeth
+  
+

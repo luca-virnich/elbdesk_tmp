@@ -1,0 +1,41 @@
+# Migration Mats Company Field
+#
+# Lists the available fields of the MigrationMatsCompanyDTO
+#
+enum: MigrationMatsCompanyField
+serialized: byName
+
+values:
+  # Company Information
+  - idAccount
+  - account
+  - account2
+  - idAramis
+  - idStaff
+  - idAvVerantw
+  - standort
+
+  # Address Information
+  - shippingStreet1
+  - shippingStreet2
+  - shippingPostalCode
+  - shippingCity
+  - shippingCountry
+  - shippingState
+
+  # Contact Details
+  - phone1
+  - phone2
+  - fax
+  - email
+  - website
+
+  - isMigrated
+
+  # Meta Information
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft 

@@ -1,0 +1,19 @@
+
+enum: SalutationCodeField
+serialized: byName
+
+values:
+  - id
+  - code
+  - description
+
+  - isPrimaryPerson
+  - isPrimaryCompany
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

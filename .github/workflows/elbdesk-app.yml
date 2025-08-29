@@ -1,0 +1,262 @@
+name: Build and push ElbDesk app Docker image
+
+on:
+  workflow_dispatch:
+    inputs:
+      SHOULD_RUN_JOB:
+        description: 'Should run the job'
+        required: true
+        default: true
+        type: boolean
+      WEB_APP_VERSION:
+        description: 'Version for the web app build (semver format: X.Y.Z[+build])'
+        required: true
+        default: '1.0.0'
+        type: string
+      NAME:
+        description: 'Name of the app'
+        required: true
+        type: string
+        default: 'coe_elbdesk_app'
+     
+      APP_HOST:
+        description: 'App host to use'
+        required: true
+        type: string
+        default: 'test.coe.elbdesk.cloud'
+      API_HOST:
+        description: 'API host to use'
+        required: true
+        type: string
+        default: 'https://test.api.coe.elbdesk.cloud/'
+      BUILD_MODE:
+        description: 'Build mode to use'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+          - debug
+          - profile
+          - release
+    # secrets:
+    #   EMAIL:
+    #     required: true
+    #   DATABASE_PASSWORD:
+    #     required: true
+    #   SERVERPOD_PASSWORDS:
+    #     required: true
+    #   SSH_PRIVATE_KEY:
+    #     required: true
+    #   SSH_HOST:
+    #     required: true
+    #   SSH_USER:
+    #     required: true
+    #   APP_ID:
+    #     required: true
+    #   APP_PRIVATE_KEY:
+    #     required: true
+
+env:
+  IMAGE_NAME: "${{ github.repository }}"
+  GHCR_ORG: "app-ahoi"
+  OWNER: "${{ github.repository_owner }}"
+  APP_PATH: "apps/elbdesk_app"
+  NAME: "coe_elbdesk_app"
+
+
+jobs:
+  build-and-push-image:
+    if: inputs.SHOULD_RUN_JOB
+    name: Build and push Flutter app Docker image
+    runs-on: ubuntu-latest
+    # environment: ${{ github.ref_name == 'dev' && 'development' || github.ref_name == 'test' && 'test' || github.ref_name == 'staging' && 'staging' || github.ref_name == 'production' && 'production' || 'development' }}
+    # environment: 'development'
+    permissions:
+      contents: read
+      packages: write
+    defaults:
+      run:
+        working-directory: ${{ env.APP_PATH }}
+    steps:
+      - name: Get token from Github App
+        uses: actions/create-github-app-token@v1
+        id: app_token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          # owner is required, otherwise the creds will fail the checkout step
+          owner: ${{ env.OWNER }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # with:
+        #   fetch-depth: 0
+        #   ref: ${{ github.ref }}
+        #   token: ${{ steps.app_token.outputs.token }}
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ env.IMAGE_NAME }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+
+      # - name: Print working directory
+      #   run: |
+      #     pwd
+
+      - name: Set up Flutter
+        id: setup_flutter
+        uses: subosito/flutter-action@v2  
+        with:  
+          channel: stable  
+          # flutter-version-file: /home/runner/work/elbdesk_coe/elbdesk_coe/pubspec.yaml  # Use version from your main pubspec 
+          flutter-version: '3.32.5'
+          cache: true
+
+
+      # - name: Print working directory
+      #   run: |
+      #     pwd
+
+      - name: Cache build directory
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.APP_PATH }}/build/web
+          key: ${{ runner.os }}-web-build-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-web-build-
+
+      - name: Print working directory
+        run: |
+          pwd
+
+      - name: Get dependencies
+        if: ${{ !steps.setup_flutter.outputs.PUB-CACHE-PATH }}
+        run: |
+          flutter pub get  
+        
+      # If you need to run Serverpod-specific commands  
+      # - name: Setup Serverpod  
+      #   run: |  
+      #     dart pub global activate serverpod_cli
+
+      - name: Flutter, Dart and Serverpod CLI versions
+        run: | 
+          flutter --version
+          dart --version
+          # serverpod version
+
+      - name: Set run mode based on branch
+        id: set_mode
+        shell: bash
+        run: |
+          branch="${{ github.ref_name }}"
+          case "$branch" in
+            "dev")
+              run_mode="development"
+              ;;
+            "test")
+              run_mode="test"
+              ;;
+            "staging")
+              run_mode="staging"
+              ;;
+            "production")
+              run_mode="production"
+              ;;
+            *)
+              run_mode="development"  # Default fallback
+              ;;
+          esac
+          echo "Running in $run_mode mode for branch $branch"
+          echo "run_mode=$run_mode" >> $GITHUB_OUTPUT
+
+      # - name: Set versions
+      #   id: set_versions
+      #   shell: bash
+      #   run: |
+      #     # Parse semver with build metadata (but ignore any pre-release as we'll set it from runMode)
+      #     semver="${{ inputs.WEB_APP_VERSION }}"
+      #     run_mode="${{ steps.set_mode.outputs.run_mode }}"
+          
+      #     # Match semver pattern (ignoring any existing pre-release)
+      #     if [[ $semver =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)(-[^+]*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
+      #       major="${BASH_REMATCH[1]}"
+      #       minor="${BASH_REMATCH[2]}"
+      #       patch="${BASH_REMATCH[3]}"
+      #       buildmeta="${BASH_REMATCH[5]}"
+            
+      #       # Windows version needs a fourth number and can't have pre-release/build info
+      #       windows_version="${major}.${minor}.${patch}.0"
+            
+      #       # Construct full semver with runMode as pre-release (except for production)
+      #       full_semver="${major}.${minor}.${patch}"
+      #       if [ "$run_mode" != "production" ]; then
+      #         full_semver+="-${run_mode}"
+      #       fi
+      #       if [ -n "$buildmeta" ]; then
+      #         full_semver+="${buildmeta}"  # buildmeta already includes the + sign
+      #       fi
+            
+      #       # Tag name for GitHub release
+      #       tag_name="v${full_semver}"
+
+      #       echo "semver=${full_semver}" >> $GITHUB_OUTPUT
+      #       echo "windows_version=${windows_version}" >> $GITHUB_OUTPUT
+      #       echo "tag_name=${tag_name}" >> $GITHUB_OUTPUT
+      #       echo "major=${major}" >> $GITHUB_OUTPUT
+      #       echo "minor=${minor}" >> $GITHUB_OUTPUT
+      #       echo "patch=${patch}" >> $GITHUB_OUTPUT
+      #       echo "buildmeta=${buildmeta}" >> $GITHUB_OUTPUT
+            
+      #       echo "Input version: ${{ inputs.WEB_APP_VERSION }}"
+      #       echo "Full semver: ${full_semver}"
+      #       echo "Windows version: ${windows_version}"
+      #       echo "Tag name: ${tag_name}"
+      #       echo "Major: ${major}"
+      #       echo "Minor: ${minor}"
+      #       echo "Patch: ${patch}"
+      #       echo "Buildmeta: ${buildmeta}"
+      #     else
+      #       echo "Invalid version format. Please use X.Y.Z[+build] format (e.g., 1.2.3 or 1.2.3+build.123)" >&2
+      #       exit 1
+      #     fi
+
+      - name: Build Web
+        id: build
+        working-directory: apps/elbdesk_app
+        run: ./web.sh --api-host="${{ inputs.API_HOST }}" --version="${{ inputs.WEB_APP_VERSION }}" --${{ steps.set_mode.outputs.run_mode }} --${{ inputs.BUILD_MODE }}
+
+      - name: List all variables
+        run: |
+          echo "SEMVER_VERSION=${{ steps.build.outputs.semver }}"
+          echo "WINDOWS_VERSION=${{ steps.build.outputs.windows_version }}"
+          echo "TAG_NAME=${{ steps.build.outputs.tag_name }}"
+          echo "MAJOR=${{ steps.build.outputs.major }}"
+          echo "MINOR=${{ steps.build.outputs.minor }}"
+          echo "PATCH=${{ steps.build.outputs.patch }}"
+          echo "BUILD_META=${{ steps.build.outputs.buildmeta }}"
+
+      - name: Build and push flutter wasm/web app Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ env.APP_PATH }}/build/web
+          file: ./${{ env.APP_PATH }}/web.Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ env.GHCR_ORG }}/${{ env.NAME }}_${{ steps.set_mode.outputs.run_mode }}:latest
+            ghcr.io/${{ env.GHCR_ORG }}/${{ env.NAME }}_${{ steps.set_mode.outputs.run_mode }}:${{ steps.build.outputs.semver }}
+            ghcr.io/${{ env.GHCR_ORG }}/${{ env.NAME }}_${{ steps.set_mode.outputs.run_mode }}:${{ inputs.BUILD_MODE }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/arm64/v8

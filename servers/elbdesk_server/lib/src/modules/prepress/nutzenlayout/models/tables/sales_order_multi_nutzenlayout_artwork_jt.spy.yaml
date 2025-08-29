@@ -1,0 +1,9 @@
+class: SalesOrderMultiNutzenlayoutArtworkJT
+table: jt_sales_order_multi_nutzenlayout_artworks
+fields:
+  salesOrderMultiNutzenlayout: SalesOrderMultiNutzenlayoutDTO?, relation(name=sales_order_multi_nutzenlayout_artwork)
+  artwork: ArtworkDTO?, relation(name=sales_order_artwork_multi_nutzenlayout)
+indexes:
+  sales_order_multi_nutzenlayout_artwork_index_idx:
+    fields: salesOrderMultiNutzenlayoutId, artworkId    
+    unique: true

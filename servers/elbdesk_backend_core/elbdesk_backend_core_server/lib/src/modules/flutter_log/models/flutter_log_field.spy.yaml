@@ -1,0 +1,21 @@
+# Flutter Log Field
+#
+# Lists the available fields of the FlutterLogDTO
+#
+enum: FlutterLogField
+serialized: byName
+
+values:
+  - id
+  - deviceId
+  - userId
+  - context
+  - exception
+  - flutterLibrary
+  - stack
+  - silent
+  - information
+  - time
+  - platform
+  - appVersion
+  - buildNumber 

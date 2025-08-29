@@ -1,0 +1,17 @@
+# Layer Type
+#
+# Defines possible types of Layer objects
+#
+# See [ArtworkLayerDTO] for more details
+#
+enum: ArtworkLayerType
+serialized: byName
+
+values:
+  - none
+  - die_cut
+  - opaque_white
+  - varnish
+  - dimensions
+
+  

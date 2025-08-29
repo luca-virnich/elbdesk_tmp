@@ -1,0 +1,20 @@
+# Serverpod Log
+#
+# This table manages the server logs from the serverpod_log table
+class: ServerpodLogDTO
+
+fields:
+  # Log identification
+  id: int?
+  sessionLogId: int?
+  messageId: int?
+  reference: String?
+  serverId: String?
+  
+  # Log details
+  time: DateTime
+  logLevel: int
+  message: String
+  error: String?
+  stackTrace: String?
+  serverity: String? 

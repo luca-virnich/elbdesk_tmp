@@ -1,0 +1,21 @@
+# Artwork Log
+# 
+# A list of values that can be used to filter and sort the Artwork Log entity
+class: ArtworkLogDTO
+table: ed_prepress_artwork_log
+fields:
+  
+  entityId: int
+  salesOrderId: int
+  salesOrderCustomId: int
+
+  oldValue: String
+  newValue: String
+  field: String
+  tableType: TableType
+  
+  updatedAt: DateTime
+  updatedById: int?
+
+
+     

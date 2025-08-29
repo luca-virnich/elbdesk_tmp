@@ -1,0 +1,11 @@
+# The Bearer Type 2 DTO class
+
+# This is the backend Bearer Type 2 model
+#
+class: BearerType2DTO
+table: prepress_bearer_type2
+
+fields:
+  minWidth: double
+  minHeight: double
+  

@@ -1,0 +1,14 @@
+export 'config/customer_fields.dart';
+export 'config/floating_customer_table_window_data.dart';
+export 'config/floating_customer_window_data.dart';
+export 'floatings/floating_customer_card.dart';
+export 'floatings/floating_customer_table.dart';
+export 'logic/customer_billing_address_provider.dart';
+export 'logic/customer_customer_provider.dart';
+export 'logic/customer_provider.dart';
+export 'logic/customer_shipping_address_provider.dart';
+export 'models/customer.dart';
+export 'models/customer_billing_customer.dart';
+export 'models/customer_customer.dart';
+export 'models/customer_shipping_contact.dart';
+export 'widgets/customer_table/customer_table.dart';

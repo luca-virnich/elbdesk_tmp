@@ -1,0 +1,77 @@
+name: Delete Migrations
+run-name: Delete migrations on ${{ inputs.branch }} branch
+
+# This workflow:
+# - Deletes all migration files
+# - Force commits the change
+# - Force pushes to the specified branch
+#
+# **Use with caution - this action cannot be undone!**
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to delete migrations from'
+        type: choice
+        required: true
+        default: 'test'
+        options:
+          - 'test'
+          - 'staging'
+          - 'dev'
+
+jobs:
+  delete-migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get token from Github App
+        uses: actions/create-github-app-token@v1
+        id: app_token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          token: ${{ steps.app_token.outputs.token }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      
+
+      - name: Delete migrations
+        run: |
+          # List current directory structure
+          echo "Current directory structure:"
+          pwd
+          ls -la
+          echo "\nContents of servers/elbdesk_server/:"
+          ls -la servers/elbdesk_server/
+          
+          # Check if directories exist before trying to remove them
+          if [ -d "servers/elbdesk_server/migrations" ]; then
+            echo "\nContents of migrations directory before deletion:"
+            ls -la servers/elbdesk_server/migrations/
+            rm -rf servers/elbdesk_server/migrations/
+            git add -A servers/elbdesk_server/migrations
+          fi
+
+          if [ -f "servers/elbdesk_server/repair-migration" ]; then
+            rm -f servers/elbdesk_server/repair-migration
+            git add -A servers/elbdesk_server/repair-migration
+          fi
+
+          # Check if there are any changes to commit
+          if git status --porcelain | grep .; then
+            git commit -m "Delete all migrations"
+            git push origin ${{ inputs.branch }} --force
+          else
+            echo "No migrations to delete"
+          fi

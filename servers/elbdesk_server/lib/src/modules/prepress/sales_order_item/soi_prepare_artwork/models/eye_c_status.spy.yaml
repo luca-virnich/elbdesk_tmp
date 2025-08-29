@@ -1,0 +1,10 @@
+enum: EyeCStatus
+serialized: byName
+
+values:
+  
+  - necessary
+  - notNecessary
+  - done
+
+  

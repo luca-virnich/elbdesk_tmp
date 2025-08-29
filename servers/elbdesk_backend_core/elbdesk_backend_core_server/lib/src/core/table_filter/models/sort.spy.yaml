@@ -1,0 +1,11 @@
+# Sort
+#
+# Used to sort a list of entities
+# This is used to define the order of the entities when filtering
+#
+class: Sort
+
+
+fields:
+  fieldKey: String
+  orderDescending: bool

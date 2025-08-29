@@ -1,0 +1,10 @@
+export 'config/floating_product_master_window_data.dart';
+export 'config/floating_product_table_window_data.dart';
+export 'config/floating_product_window_data.dart';
+export 'floatings/floating_product_card.dart';
+export 'floatings/floating_product_master_card.dart';
+export 'floatings/floating_product_table.dart';
+export 'logic/product_provider.dart';
+export 'models/product.dart';
+export 'widgets/product_table.dart';
+export 'widgets/product_table_card/product_table_card.dart';

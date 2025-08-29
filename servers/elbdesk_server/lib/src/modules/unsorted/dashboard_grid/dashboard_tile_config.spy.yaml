@@ -1,0 +1,12 @@
+# Dashboard tile configuration
+class: DashboardTileConfigDTO
+
+fields:
+  id: String
+  slotIndex: int      # Which slot the tile belongs to
+  stackPosition: int  # Position within the slot (0 is top)
+  columnSpan: int     # Width of the slot in columns
+  height: double      # Individual tile height in pixels
+  type: DashboardTileType # Type of the tile
+  entityId: int?    # Optional: Customer or entity identifier.
+  childEntityIds: List<int>?  # Optional: List of related child entity IDs.

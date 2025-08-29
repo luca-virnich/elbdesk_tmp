@@ -1,0 +1,14 @@
+# BearerTypeSheetFedPressPlateEqualsSubDTO
+# Defines the Sheet Fed Press Plate Equals Substrate Bearer model
+class: BearerTypeSheetFedPressPlateEqualsSubDTO
+table: prepress_bearer_type_sheet_fed_press_plate_equals_sub
+
+fields:
+  # Name of the machine control file
+  machineControlFile: String?
+
+  # Type of raster fields used
+  rasterFieldType: String?
+
+  # Type of registration mark used
+  registrationMarkType: String?

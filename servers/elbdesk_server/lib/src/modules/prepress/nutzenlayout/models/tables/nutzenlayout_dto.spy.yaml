@@ -1,0 +1,49 @@
+
+class: NutzenlayoutDTO
+table: ed_prepress_nutzenlayout
+fields:
+  
+  description: String
+  # width: double
+  drucklaenge: double
+  
+  
+  formType: NutzenlayoutFormType
+  
+  
+  nutzenlayoutColumns: List<NutzenlayoutColumnDTO>
+  
+  dimensions: List<NutzenlayoutArtworkDimensions>
+  customer: CustomerDTO?, relation
+  
+  # NutzenlayoutUnitSystem
+  leadingUnitSystem: String
+
+  
+  
+
+  # junction table sales order and artworks, master id?
+  # sales order id / nutzenlayout id / artwork ids(w/ master id)
+  
+ 
+
+  
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?

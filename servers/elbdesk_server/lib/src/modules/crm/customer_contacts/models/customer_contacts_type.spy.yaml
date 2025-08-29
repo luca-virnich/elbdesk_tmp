@@ -1,0 +1,7 @@
+enum: CustomerContactsType
+serialized: byName
+
+values:
+  - billing
+  - shipping
+  - other

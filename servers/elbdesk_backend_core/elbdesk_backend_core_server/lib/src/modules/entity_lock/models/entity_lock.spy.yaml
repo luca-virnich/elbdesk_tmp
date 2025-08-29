@@ -1,0 +1,13 @@
+# Data Lock
+#
+# This table manages the locked state of all objects managed
+class: EntityLockDTO
+
+
+fields:
+  tableType: String
+  entityId: int
+  editingSessionId: String
+  lockedAt: DateTime
+
+  userId: int?

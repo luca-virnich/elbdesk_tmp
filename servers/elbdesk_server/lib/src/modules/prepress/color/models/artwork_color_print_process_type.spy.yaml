@@ -1,0 +1,35 @@
+# Print Process Type
+#
+# Defines possible printing process types
+#
+enum: ArtworkColorPrintProcessType
+serialized: byName
+
+values:
+  # Flexo - Flexographic printing
+  - flexo
+  # Flexo Ref
+  - flexoRef
+
+  # Siebdruck - Screen Printing
+  - siebdruck
+  # Siebdruck Ref
+  - siebdruckRef
+
+  # Buchdruck - Letter press
+  - buchdruck
+  # Buchdruck Ref
+  - buchdruckRef
+
+  # Digitaldruck - Digital Printing
+  - digitaldruck
+  # Digitaldruck Ref
+  - digitaldruckRef
+
+  # Offsetdruck - Offset Printing
+  - offsetdruck
+  # Offsetdruck Ref
+  - offsetdruckRef
+
+  # Nicht Druckend - Not Print
+  - nichtDruckend

@@ -1,0 +1,17 @@
+enum: CustomerContactsField
+serialized: byName
+
+values:
+  - id
+  - type
+  - isPrimary
+  - customer
+  - contact
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

@@ -1,0 +1,9 @@
+
+enum: NutzenlayoutFormType
+serialized: byName
+
+values:
+  - einzelform
+  - sammelform
+  
+

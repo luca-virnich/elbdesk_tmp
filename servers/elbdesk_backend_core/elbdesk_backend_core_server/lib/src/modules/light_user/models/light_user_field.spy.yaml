@@ -1,0 +1,23 @@
+# App User Field
+#
+# Lists the available fields of the AppUserDTO
+#
+enum: LightUserField
+serialized: byName
+
+values:
+  - id
+  - userInfoId
+  - email
+  - fullName
+  - initials
+  - imageUrl
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  
+  - deletedAt
+  - isDraft
+  

@@ -1,0 +1,62 @@
+# The Customer DTO class
+
+class: CustomerDTO
+table: ed_crm_customer
+
+fields:
+
+  registerNumber: String?
+  paymentCode: PaymentCodeDTO?, relation(optional)
+  vatId: String
+  customId: int
+  customIdString: String?
+
+  salesOrderHints: CustomerSalesOrderHintsDTO?
+  invoiceEmail: String
+  # Enum as String
+  invoiceDeliveryMethod: String?
+  # Enum as String
+  shippingMethod: ShippingMethodDTO?, relation(optional)
+
+  contractSovereignty: AppClientDTO?, relation(optional)
+  assignedUser: module:core:LightUserDTO?, relation(optional)
+
+
+  contactId: int?
+  contact: ContactDTO?, relation(name=crm_customer_contact, field=contactId)
+
+  ftpInterfaces: List<FTPInterfaceDTO>?, relation
+
+  bearers: List<BearerCustomerRelation>?, relation(optional, name= bearer_customer)
+  
+  # Prepress
+  prepressColorPalettes: List<PrepressColorPaletteDTO>?, relation(name=customer_prepress_color_palette)
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+
+indexes:
+  customer_contact_unique_idx:
+    fields: contactId
+    unique: true
+  
+  customer_custom_id_idx:
+    fields: customId
+    unique: true

@@ -1,0 +1,9 @@
+# Artwork Sales Order Update
+# 
+# A list of values that can be used to filter and sort the Artwork Sales Order Update entity
+class: ArtworkSalesOrderUpdate 
+
+fields:
+  artwork: ArtworkDTO
+  prevSalesOrderId: int
+  nextSalesOrderId: int

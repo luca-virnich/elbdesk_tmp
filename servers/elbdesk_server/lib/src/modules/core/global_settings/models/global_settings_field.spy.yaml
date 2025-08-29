@@ -1,0 +1,20 @@
+# Global Settings Field
+#
+# Lists the available fields of the GlobalSettingsDTO
+#
+enum: GlobalSettingsField
+serialized: byName
+
+values:
+  - id
+  - outputPath
+  - aeEndpointPath
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  
+  - deletedAt
+  - isDraft
+  

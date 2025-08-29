@@ -1,0 +1,17 @@
+# Product Log Field
+# 
+# A list of fields that can be used to filter and sort the Product Log entity
+enum: ProductLogField
+serialized: byName
+
+values:
+  - id
+  - entityId
+  - salesOrderId
+  - salesOrderCustomId
+  - oldValue
+  - newValue
+  - field
+  - tableType
+  - updatedAt
+  - updatedBy 

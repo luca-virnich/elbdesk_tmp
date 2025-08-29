@@ -1,0 +1,18 @@
+# Entity Log Field
+#
+# Lists the available fields of the EntityLogDTO
+#
+enum: EntityLogField
+serialized: byName
+
+values:
+  - id
+  - entityId
+  - oldValue
+  - newValue
+  - field
+  - tableType
+  - editedAt
+  - editedById
+  
+  

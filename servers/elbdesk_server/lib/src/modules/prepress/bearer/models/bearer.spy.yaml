@@ -1,0 +1,57 @@
+# Bearer DTO
+#
+# This is the backend Bearer model
+# It is used to define the Bearer Table in the database and works as a DTO for the Bearer.
+# The needed CRUD operations & more are defined in the BearerEndpoint class
+#
+# The fields that can be used to display the Bearer Information are defined in the BearerField enum
+# Which can be found in the bearer_field.spy.yaml file
+#
+# Defines a bearer that can be part of a Prepress task
+#
+class: BearerDTO
+table: ed_prepress_bearer
+
+fields:
+  # Bearer type
+  type: BearerType
+
+  # Standard fields
+  bearerName: String
+  description: String
+  longText: String
+  costCenterCode: String
+
+  # Type relations
+  type1: BearerType1DTO?, relation(optional)
+  type2: BearerType2DTO?, relation(optional)
+
+  # New Type Relations
+  typeStandardFlexoPrint: BearerTypeStandardFlexoPrintDTO?, relation(optional)
+  typeFlexoPrintMultilayer: BearerTypeFlexoPrintMultilayerDTO?, relation(optional)
+  typeSheetFedPressMinPlate: BearerTypeSheetFedPressMinPlateDTO?, relation(optional)
+  typeSheetFedPressPlateEqualsSub: BearerTypeSheetFedPressPlateEqualsSubDTO?, relation(optional)
+  typeOffsetPressFixedPlate: BearerTypeOffsetPressFixedPlateDTO?, relation(optional)
+  typeSheetFedPressFixedPlate: BearerTypeSheetFedPressFixedPlateDTO?, relation(optional)
+
+  # Customer Relation
+  customer: List<BearerCustomerRelation>?, relation(optional, name=customer_bearer)
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?

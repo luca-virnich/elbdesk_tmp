@@ -1,0 +1,57 @@
+# Contact Field
+#
+# This enum defines the various fields that can be used with the Contact Table
+# Each field name has to be the same name as the field in the ContactDTO class
+#
+# When adding a new property to the ContactDTO class a new value should also
+# be added to this enum to ensure that the frontend can display the new field
+#
+enum: ContactField
+serialized: byName
+
+values:
+ 
+  - id
+  - type
+  - firstName
+  - lastName 
+  - fullName
+  - birthDate
+  - importantNote
+  - address
+  - address2
+  - address3
+  - postCode
+  - city
+  - state
+  - customId
+  - customIdString
+
+  - countryCode
+  - languageCode
+  - salutationCode
+
+  - phone
+  - mobile
+  - email
+  - website
+
+  - customer
+  - customerId
+  - customerCustomId
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  
+  
+  - selectContact
+  - filterByIdOrFullName
+
+  - actions
+  
+  
+  - deletedAt
+  - isDraft
+  

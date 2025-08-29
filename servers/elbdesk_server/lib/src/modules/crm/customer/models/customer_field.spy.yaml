@@ -1,0 +1,42 @@
+enum: CustomerField
+serialized: byName
+
+values:
+  - id
+  - type
+  - customerName
+  - address
+  - address2
+  - address3
+  - postCode
+  - city
+  - state
+  - selectCustomer
+  - country
+  - phone
+  - mobile
+  - email
+  - website
+  - customId
+  - customIdString
+
+  - assignedUser
+
+  # payment
+  - vatId
+  - paymentCode
+  - invoiceEmail
+  - invoiceDeliveryMethod
+  # shipping
+  - shippingMethod
+  - contractSovereignty
+
+  - filterByIdOrName
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+
+  - deletedAt
+  - isDraft

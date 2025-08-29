@@ -1,0 +1,11 @@
+# Filter Operator
+#
+# Lists the available operators for a filter
+#
+enum: FilterOperator
+serialized: byName
+
+values:
+  - and
+  - or
+  - none

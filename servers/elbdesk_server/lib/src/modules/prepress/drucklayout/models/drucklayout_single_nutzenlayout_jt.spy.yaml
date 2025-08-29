@@ -1,0 +1,14 @@
+# Drucklayout Single Nutzenlayout Junction Table
+#
+# Used to link Drucklayouts to Single Nutzenlayouts in Sales Orders.
+#
+class: DrucklayoutSingleNutzenlayoutJT
+table: jt_drucklayout_single_nutzenlayout
+fields:
+  drucklayout: DrucklayoutDTO?, relation(name=drucklayout_single_nutzenlayout)
+  salesOrderSingleNutzenlayout: SalesOrderSingleNutzenlayoutDTO?, relation(name=single_nutzenlayout_drucklayout)
+  salesOrder: SalesOrderDTO?, relation
+indexes:
+  drucklayout_single_nutzenlayout_index_idx:
+    fields: drucklayoutId, salesOrderSingleNutzenlayoutId, salesOrderId
+    unique: true 

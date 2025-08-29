@@ -1,0 +1,37 @@
+class: SoiPrepareArtworkDTO
+table: ed_prepress_soi_prepare_artwork
+fields:
+
+  # The artwork associated with this soi prepare artwork
+  artwork: ArtworkDTO?, relation
+  artworkMasterId: int
+  eyeCStatus: String
+  difficultyLevel: String
+  # The parent sales order item
+  salesOrderItem: SalesOrderItemDTO?, relation
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+indexes:
+  soi_prepare_artwork_artwork_idx:
+    fields: artworkId
+    unique: true
+  
+      

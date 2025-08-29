@@ -1,0 +1,27 @@
+
+enum: CountryCodeField
+serialized: byName
+
+values:
+  - id
+  - code
+  - countryRegionName
+  - isoCode
+  - numericCode
+  - addressFormat
+  - contactAddressFormat
+  - federalRegion
+  - euCode
+  - intrastatCode
+  - taxScheme
+  - showState  
+  - isPrimary
+
+  - lastModifiedAt
+  - lastModifiedBy
+  - createdAt
+  - createdBy
+  
+  - deletedAt
+  - isDraft
+    

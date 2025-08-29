@@ -1,0 +1,48 @@
+# App User Field
+#
+# Lists the available fields of the AppUserDTO
+#
+enum: AppUserField
+serialized: byName
+
+values:
+  - id
+  - userInfoId
+  - userIdentifier
+  - userName
+  - email
+  - created
+  - imageUrl
+  - scopeNames
+  - blocked
+
+  - firstName
+  - lastName 
+  - fullName
+  - initials
+  - address
+  - address2
+  
+  - postCode
+  - city
+  - state
+  - country
+  - phone
+  - mobile
+  - privateEmail
+  - employeeNumber
+  - entryDate
+  - terminationDate
+  - department
+  - position
+  - costCenter
+  - isActive
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  
+  - deletedAt
+  - isDraft
+  

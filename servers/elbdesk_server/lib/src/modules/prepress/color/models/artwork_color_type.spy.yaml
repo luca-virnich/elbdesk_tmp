@@ -1,0 +1,18 @@
+# Artwork Color Type
+#
+# Defines possible types of the ArtworkColor object
+#
+# See [ArtworkColorDTO] for more details
+#
+enum: ArtworkColorType
+serialized: byName
+
+values:
+  # Normal
+  - normal
+
+  # Opak - Opaque
+  - opak
+
+  # Nicht Druckend - Not Print
+  - nichtDruckend

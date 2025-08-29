@@ -1,0 +1,14 @@
+# Edit Request
+#
+# Used to send edit requests to a specific client.
+# Can be used to "unblock" an entity which is opened or edited by another user.
+#
+class: EditRequestDTO
+
+fields:
+  tableType: String
+  tablePrimaryKey: int
+  createdByName: String
+  createdAt: DateTime
+  message: String
+  requestingFloatingWindowId: String

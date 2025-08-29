@@ -1,0 +1,10 @@
+enum: SoiPrepareArtworkDifficultyLevel
+serialized: byName
+
+values:
+  
+  - easy
+  - medium
+  - hard
+
+  

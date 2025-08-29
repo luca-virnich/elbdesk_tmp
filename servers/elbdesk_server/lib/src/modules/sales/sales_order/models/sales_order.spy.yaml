@@ -1,0 +1,71 @@
+# SalesOrder
+# The main entity of a project in which every task has to be defined
+# Is clearly assigned to a customer and usually ends in an invoice
+class: SalesOrderDTO
+table: ed_sales_sales_order
+
+fields:
+  #general
+  
+  description: String
+  orderDate: DateTime
+
+  customId: int
+  customIdString: String?
+
+  keywords: String
+  
+  
+  
+  orderNumber: String
+
+  # SalesOrderStatus
+  status: String
+
+  #contact - possible billing address
+  billingAddress: CustomerDTO?, relation(optional)
+
+  #contact - possible delivery address
+  shippingAddress: ContactDTO?, relation(optional)
+
+  #User that has to handle the SalesOrder
+  
+  assignedUser: module:core:LightUserDTO?, relation(optional)
+
+  customerCustomer: CustomerCustomerDTO?, relation(optional)
+  customerCustomerContactPerson: ContactDTO?, relation(optional)
+
+  # Drucklayout JT Relation
+  drucklayouts: List<DrucklayoutSalesOrderJT>?, relation(name=sales_order_drucklayout, optional)
+
+
+  #customer
+  customer: CustomerDTO?, relation
+
+  customerContactPerson: ContactDTO?, relation(optional)
+
+  customerFirstReference: String
+  customerSecondReference: String
+
+  customerCustomerReference: String
+
+  
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?

@@ -1,0 +1,21 @@
+# Entity Log
+#
+# Used to log changes to an entity
+#
+class: EntityLogDTO
+table: ed_core_entity_log
+fields:
+  
+  entityId: int
+  oldValue: String
+  newValue: String
+  field: String
+  tableType: TableType
+  
+  editedAt: DateTime
+  editedById: int?
+
+indexes:
+  log_idx:
+    fields: entityId, editedAt, tableType
+     

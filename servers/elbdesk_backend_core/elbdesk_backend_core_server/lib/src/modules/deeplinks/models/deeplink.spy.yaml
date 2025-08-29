@@ -1,0 +1,15 @@
+# Edit Request
+#
+# Used to send edit requests to a specific client.
+# Can be used to "unblock" an entity which is opened or edited by another user.
+#
+class: Deeplink
+table: ed_core_deeplink
+
+fields:
+  floatingWindowType: String
+  primaryId: int
+  payload: String?
+  createdAt: DateTime
+  
+

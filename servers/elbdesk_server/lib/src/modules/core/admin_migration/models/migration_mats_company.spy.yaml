@@ -1,0 +1,50 @@
+# Migration Mats Company
+#
+# This table holds imported company data from MATS system
+class: MigrationMatsCompanyDTO
+table: ed_migration_mats_company
+
+fields:
+  # Company Information
+  idAccount: String?
+  account: String?
+  account2: String?
+  idAramis: String?
+  idStaff: String?
+  idAvVerantw: String?
+  standort: String?
+
+  # Address Information
+  shippingStreet1: String?
+  shippingStreet2: String?
+  shippingPostalCode: String?
+  shippingCity: String?
+  shippingCountry: String?
+  shippingState: String?
+
+  # Contact Details
+  phone1: String?
+  phone2: String?
+  fax: String?
+  email: String?
+  website: String?
+
+  isMigrated: bool
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String? 

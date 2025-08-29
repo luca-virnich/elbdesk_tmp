@@ -1,0 +1,37 @@
+# Artwork Quarantine Field
+# 
+# A list of fields that can be used to filter and sort the Artwork Quarantine entity
+enum: ArtworkQuarantineField
+serialized: byName
+
+values:
+  - id
+  - description
+  - customer
+  - customerId
+  - artwork
+  - status
+  - keywords
+  - colors
+  - groupStatus
+
+  - width
+  - height
+  - cornerRadius
+
+  - productSeriesId
+  - printProcessType
+  - productType
+  - artworkType
+
+  - createProduct
+  - createProductPart
+  - deleteArtworkQuarantine
+
+  # Meta Information
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft

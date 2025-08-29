@@ -1,0 +1,8 @@
+class: EntityAssignmentDTO
+
+fields:
+  tableType: String
+  entityId: int
+  additionalData: String?
+  deadline: DateTime?
+  lightUserId: int

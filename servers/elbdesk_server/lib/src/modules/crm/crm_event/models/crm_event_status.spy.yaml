@@ -1,0 +1,9 @@
+enum: CrmEventStatus
+
+serialized: byName
+
+values:
+ - scheduled
+ - inProgress
+ - completed
+ - cancelled

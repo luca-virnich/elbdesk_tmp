@@ -1,0 +1,51 @@
+# Migration Mats Person Field
+#
+# Lists the available fields of the MigrationMatsPersonDTO
+#
+enum: MigrationMatsPersonField
+serialized: byName
+
+values:
+  # Contact Information
+  - idContact
+  - nameFirst
+  - nameLast
+  - anrede
+  - titel
+  - department
+  - position
+  - anredeLang
+  - idAccount
+  - isPerson
+
+  # Address Information
+  - primaryStreet1
+  - primaryStreet2
+  - primaryPostalCode
+  - primaryCity
+  - primaryCountry
+  - primaryState
+
+  # Contact Details
+  - telefon1
+  - telefon2
+  - mobilTelefon
+  - fax
+  - email
+
+  # Status and Work Information
+  - status
+  - wK
+  - wWf
+  - wFp
+  - contactInfor
+
+  - isMigrated
+
+  # Meta Information
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft 

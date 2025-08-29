@@ -1,0 +1,89 @@
+# The Contact DTO class
+
+# This is the backend Contact model
+# It is used to define the Contact Table in the database and works as a DTO for the Contact.
+# The model used in the frontend is based on this class and can be found in elbrp_core
+# The needed CRUD operations & more are defined in the ContactEndpoint class
+#
+# The fields that can be used to display the Contact Information are defined in the ContactField enum
+# Which can be found in the contact_field.spy.yaml file
+#
+class: ContactDTO
+table: ed_crm_contact
+
+fields:
+  # contact type person or company
+  type: String
+  # person related fields
+  firstName: String
+  title: String?
+  lastName: String
+  initials: String
+  fullName: String
+  birthDate: DateTime?
+  customId: int?
+  customIdString: String?
+
+
+  individualGreeting: String?
+
+  importantNote: String
+
+  # primary address details
+  address: String
+  address2: String
+  address3: String
+  postCode: String
+  city: String
+  state: String
+  
+  countryCode: CountryCodeDTO?, relation(optional)
+  languageCode: LanguageCodeDTO?, relation(optional)
+  salutationCode: SalutationCodeDTO?, relation(optional)
+  
+
+  # contact details
+  phone: String
+  phone2: String?
+  mobile: String
+  email: String
+  website: String
+  fax: String?
+
+  #migration fields
+  migrationMatsPerson: MigrationMatsPersonDTO?, relation(optional)
+  matsContactId: String?
+  migrationMatsCompany: MigrationMatsCompanyDTO?, relation(optional)
+  matsCompanyId: String?
+
+
+
+  customer: CustomerDTO?, relation(optional, name=crm_customer_contact)
+
+  events: List<CrmEventContactJT>?, relation(optional, name=crm_event_contact)
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+
+indexes:
+  contact_custom_id_idx:
+    fields: customId
+    unique: true
+ 

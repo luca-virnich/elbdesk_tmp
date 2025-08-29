@@ -1,0 +1,29 @@
+# Trapping DTO
+#
+# Trapping is the amount of color that is added to specific parts of an artwork
+# Looks similar to a "border" around specific parts to avoid "unprinted" areas between color spaces
+# which would happen, because of misalignments of the printing plates
+#
+# This is used as a descriptive value in the Artwork
+# - The actual trapping which is applied to the artwork will happen in the Media Operations process
+#
+# Google "Trapping Prepress" for more information on the exact process
+#
+class: TrappingDTO
+
+fields:
+  
+  # Normal trapping value
+  trappNormal: double
+  
+  # Black trapping value
+  trappBlack: double
+  
+  # Image trapping value
+  trappBilder: double
+  
+  # Special colors trapping value
+  trappSonderfarben: double
+  
+  # Pullback trapping value
+  trappRueckzug: double

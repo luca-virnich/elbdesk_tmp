@@ -1,0 +1,168 @@
+name: Test Force Migrations Jobs
+
+on:
+  workflow_call:
+    inputs:
+      NAME:
+        required: true
+        type: string
+      PATH:
+        required: true
+        type: string
+      RUN_MODE:
+        required: true
+        type: string
+      DATABASE_NAME:
+        required: true
+        type: string
+      DATABASE_USER:
+        required: true
+        type: string
+      DATABASE_PORT:
+        required: true
+        type: string
+      OWNER:
+        required: true
+        type: string
+      FLUTTER_VERSION:
+        required: true
+        type: string
+      SERVERPOD_VERSION:
+        required: true
+        type: string
+    secrets:
+      DATABASE_PASSWORD:
+        required: true
+      SERVERPOD_PASSWORDS:
+        required: true
+      APP_ID:
+        required: true
+      APP_PRIVATE_KEY:
+        required: true
+
+jobs:
+  test-migrations:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    services:
+      postgres:
+        image: postgres:16.3
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          POSTGRES_DB: ${{ inputs.DATABASE_NAME }}
+          POSTGRES_USER: ${{ inputs.DATABASE_USER }}
+        ports:
+          - "${{ inputs.DATABASE_PORT }}"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    defaults:
+      run:
+        working-directory: ${{ inputs.PATH }}
+    steps:
+      - name: Get token from Github App
+        uses: actions/create-github-app-token@v1
+        id: app_token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          # owner is required, otherwise the creds will fail the checkout step
+          owner: ${{ inputs.OWNER }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app_token.outputs.token }}
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Fetch migrations from base branch
+        run: |
+          # Fetch the base branch
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          
+          # Remove existing migrations directory if it exists
+          rm -rf migrations
+          
+          # Check if migrations directory exists in base branch
+          if git ls-tree -r origin/${{ github.event.pull_request.base.ref }} | grep -q "migrations/"; then
+            # Checkout migrations directory from base branch
+            git checkout origin/${{ github.event.pull_request.base.ref }} -- migrations/
+          fi
+
+      - name: Configure Git for private packages
+        run: |
+          git config --global url."https://x-access-token:${{ steps.app_token.outputs.token }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ inputs.FLUTTER_VERSION }}
+      - run: flutter --version
+      - run: dart --version
+
+      # - name: Set up Dart SDK
+      #   uses: dart-lang/setup-dart@v1
+
+      - name: Install Serverpod CLI
+        run: |
+          dart pub global activate serverpod_cli ${{ inputs.SERVERPOD_VERSION }}
+
+      - name: Overwrite ${{ inputs.RUN_MODE }}.yaml with test_migrations.yaml
+        run: |
+          cp "config/${{ inputs.RUN_MODE }}.yaml" "config/${{ inputs.RUN_MODE }}.yaml.bak"
+          cp config/test_migrations.yaml "config/${{ inputs.RUN_MODE }}.yaml"
+
+      - name: Create passwords file
+        shell: bash
+        env:
+          SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
+        run: |
+          echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
+
+
+      - run: flutter pub get
+      
+      - name: Create FORCE migration
+        id: create_migration
+        shell: /usr/bin/bash +e {0}
+        # continue-on-error: true
+        run: |
+          echo "=== Starting migration ==="
+          migration_output=$(serverpod create-migration --force 2>&1)
+          migration_exit_code=$?
+          echo "=== Migration output ==="
+          echo "$migration_output"
+          echo "=== Migration exit code: $migration_exit_code ==="
+
+          # Use heredoc syntax for multiline output
+          echo "migration_output<<EOF" >> $GITHUB_OUTPUT
+          echo "$migration_output" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          if [[ "$migration_output" == *"No changes detected"* ]]; then
+            echo "No database changes detected - continuing"
+            exit 0
+          elif [[ "$migration_output" == *"Migration aborted."* ]]; then
+            echo "=== Migration aborted - exiting ==="
+            exit 1
+          else
+            if [[ $migration_exit_code -ne 0 ]]; then
+              echo "=== Migration failed - exiting ==="
+              exit 1
+            fi
+            echo "=== Migration created - continuing ==="
+            exit 0
+          fi
+
+      - name: Test migrations
+        run: dart bin/main.dart --mode ${{ inputs.RUN_MODE }} --role maintenance --apply-migrations
+
+      - name: Check migration test status
+        if: ${{ failure() }}
+        run: |
+          echo "Migration tests failed"
+          exit 1

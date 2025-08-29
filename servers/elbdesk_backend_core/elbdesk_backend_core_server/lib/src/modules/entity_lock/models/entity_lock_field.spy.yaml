@@ -1,0 +1,13 @@
+# Entity Lock Field
+#
+# Used to lock an entity for editing
+enum: EntityLockField
+serialized: byName
+
+values:
+  - entityType
+  - entityId
+  - editingSessionId
+  - lockedAt 
+  - lockedBy
+  - deleteButton

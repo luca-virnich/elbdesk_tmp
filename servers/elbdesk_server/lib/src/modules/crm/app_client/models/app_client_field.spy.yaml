@@ -1,0 +1,21 @@
+enum: AppClientField
+serialized: byName
+
+values:
+  - id
+  - contact
+  - description
+  - automationEngine
+  - employees
+
+  
+
+  - createdAt
+  - createdBy
+
+  - lastModifiedAt
+  - lastModifiedBy
+
+  - deletedAt
+  - isDraft
+  

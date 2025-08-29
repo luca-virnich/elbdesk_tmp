@@ -1,0 +1,20 @@
+# The table fields of a sales order
+enum: SalesOrderStatusField
+serialized: byName
+
+values:
+  - id
+  
+  - description
+  - color
+  - orderId
+  
+  # meta information
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  
+  - deletedAt
+  - isDraft
+  

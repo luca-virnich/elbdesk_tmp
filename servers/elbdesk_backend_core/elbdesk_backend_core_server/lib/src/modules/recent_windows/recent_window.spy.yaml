@@ -1,0 +1,9 @@
+class: RecentWindowDTO
+table: ed_core_recent_window
+fields:
+  type: String
+  entityId: int?
+  label: String
+  timestamp: DateTime?
+  additionalData: String?
+  userId: int?

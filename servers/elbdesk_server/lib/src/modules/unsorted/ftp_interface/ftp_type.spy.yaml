@@ -1,0 +1,6 @@
+enum: FTPType
+serialized: byName
+
+values:
+  - ftp
+  - sftp

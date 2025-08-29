@@ -1,0 +1,19 @@
+# Artwork Template Pre Selection Field
+# 
+# A list of fields that can be used to filter and sort the Artwork Template Pre Selection entity
+enum: ArtworkTemplatePreSelectionField
+serialized: byName
+
+values:
+  - id
+  - description
+  - customer
+  
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

@@ -1,0 +1,34 @@
+# The table fields of a sales order
+enum: SalesOrderField
+serialized: byName
+
+values:  
+  - description
+  - orderDate
+  - keywords
+  - status
+  - orderNumber  
+  - billingAddress
+  - assignedUser
+  - customerId
+  - customerName
+  - customerContactPerson
+  - customerCustomerContactPerson
+  - customerCustomer
+  - customerFirstReference
+  - customerSecondReference
+  - customerCustomerReference
+  
+  - shippingAddress
+  - customId
+  - customIdString
+  - filterByIdOrName
+
+  # Meta
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

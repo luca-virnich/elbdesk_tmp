@@ -1,0 +1,53 @@
+# Artwork Field
+# 
+# A list of fields that can be used to filter and sort the Artwork entity
+enum: ArtworkField
+serialized: byName
+
+values:
+  - id
+  
+  - description
+  - customer
+  - customerId
+
+  - layerId
+  - version
+  - abzug
+  - reference
+
+  - salesOrderId
+
+  - artworkType
+  - printProcessType
+
+  - width
+  - height
+  - cornerRadius
+  - dieCutterType
+  
+  # Trapping
+  - trappNormal
+  - trappBlack
+  - trappBilder
+  - trappSonderfarben
+  - trappRueckzug
+  # Bleed (Anschnitt)
+  - anschnitt
+  # Ebenen
+  - layers
+  # Rasterangaben
+  - colors
+  # Codes
+  - codes
+
+  # helper fields
+  - actions
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

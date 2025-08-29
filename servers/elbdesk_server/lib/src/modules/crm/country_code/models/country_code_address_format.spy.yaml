@@ -1,0 +1,10 @@
+
+enum: CountryCodeAddressFormat
+serialized: byName
+
+values:
+  - postCode_city
+  - city_postCode
+  - city_country_postCode
+  - blank_postCode_city
+  

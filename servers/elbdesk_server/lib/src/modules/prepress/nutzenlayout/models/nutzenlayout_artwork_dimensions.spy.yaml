@@ -1,0 +1,9 @@
+
+class: NutzenlayoutArtworkDimensions
+
+fields:
+  width: double
+  height: double
+  
+
+

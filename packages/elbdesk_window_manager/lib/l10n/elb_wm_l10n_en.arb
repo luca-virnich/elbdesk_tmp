@@ -1,0 +1,114 @@
+{
+  "@@locale": "en",
+  
+  "minimizeTooltip": "Minimize",
+  "@minimizeTooltip": {
+    "description": "Tooltip for minimize button"
+  },
+  
+  "maximizeTooltip": "Maximize",
+  "@maximizeTooltip": {
+    "description": "Tooltip for maximize button"
+  },
+  
+  "restoreTooltip": "Restore",
+  "@restoreTooltip": {
+    "description": "Tooltip for restore button"
+  },
+  
+  "closeTooltip": "Close",
+  "@closeTooltip": {
+    "description": "Tooltip for close button"
+  },
+  
+  "minimizeAllTooltip": "Minimize all windows",
+  "@minimizeAllTooltip": {
+    "description": "Tooltip for minimize all button"
+  },
+  
+  "restoreAllTooltip": "Restore all windows",
+  "@restoreAllTooltip": {
+    "description": "Tooltip for restore all button"
+  },
+  
+  "scrollLeftTooltip": "Scroll left",
+  "@scrollLeftTooltip": {
+    "description": "Tooltip for scroll left button"
+  },
+  
+  "scrollRightTooltip": "Scroll right",
+  "@scrollRightTooltip": {
+    "description": "Tooltip for scroll right button"
+  },
+  
+  "showWindowOverviewTooltip": "Show window overview",
+  "@showWindowOverviewTooltip": {
+    "description": "Tooltip for show window overview button"
+  },
+  
+  "closeOverviewTooltip": "Close overview",
+  "@closeOverviewTooltip": {
+    "description": "Tooltip for close overview button"
+  },
+  
+  "noOpenWindows": "No open windows",
+  "@noOpenWindows": {
+    "description": "Message shown when there are no open windows"
+  },
+  
+  "minimizeAllLabel": "Minimize All",
+  "@minimizeAllLabel": {
+    "description": "Label for minimize all button"
+  },
+  
+  "windowsLabel": "Windows",
+  "@windowsLabel": {
+    "description": "Label for windows section"
+  },
+  
+  "menuLabel": "Menu",
+  "@menuLabel": {
+    "description": "Label for menu"
+  },
+  
+  "allWindowsTitle": "All Windows",
+  "@allWindowsTitle": {
+    "description": "Title for all windows view"
+  },
+  
+  "windowCount": "{count, plural, =0{No windows} =1{1 window} other{{count} windows}}",
+  "@windowCount": {
+    "description": "Count of windows",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "compact"
+      }
+    }
+  },
+  
+  "minimizedLabel": "Minimized",
+  "@minimizedLabel": {
+    "description": "Label for minimized state"
+  },
+  
+  "navigationTitle": "Navigation",
+  "@navigationTitle": {
+    "description": "Title for navigation section"
+  },
+  
+  "expandTooltip": "Expand",
+  "@expandTooltip": {
+    "description": "Tooltip for expand button"
+  },
+  
+  "collapseTooltip": "Collapse",
+  "@collapseTooltip": {
+    "description": "Tooltip for collapse button"
+  },
+  
+  "errorTitle": "Error",
+  "@errorTitle": {
+    "description": "Title for error windows"
+  }
+}

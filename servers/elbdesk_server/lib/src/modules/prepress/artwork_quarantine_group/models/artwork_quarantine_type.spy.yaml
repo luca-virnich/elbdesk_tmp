@@ -1,0 +1,7 @@
+enum: ArtworkQuarantineGroupType
+
+serialized: byName
+
+values:
+ - single
+ - multilayer

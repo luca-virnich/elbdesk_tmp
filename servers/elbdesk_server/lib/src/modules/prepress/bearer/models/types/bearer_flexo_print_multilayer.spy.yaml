@@ -1,0 +1,8 @@
+# BearerTypeFlexoPrintMultilayerDTO
+# Defines the Flexo Print Multilayer Bearer model
+class: BearerTypeFlexoPrintMultilayerDTO
+table: bearer_type_prepress_flexo_print_multilayer
+
+fields:
+  # Name of the machine control file
+  machineControlFile: String?

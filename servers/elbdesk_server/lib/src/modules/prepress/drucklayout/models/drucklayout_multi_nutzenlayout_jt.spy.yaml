@@ -1,0 +1,14 @@
+# Drucklayout Multi Nutzenlayout Junction Table
+#
+# Used to link Drucklayouts to Multi Nutzenlayouts in Sales Orders.
+#
+class: DrucklayoutMultiNutzenlayoutJT
+table: jt_drucklayout_multi_nutzenlayout
+fields:
+  drucklayout: DrucklayoutDTO?, relation(name=drucklayout_multi_nutzenlayout)
+  salesOrderMultiNutzenlayout: SalesOrderMultiNutzenlayoutDTO?, relation(name=multi_nutzenlayout_drucklayout)
+  salesOrder: SalesOrderDTO?, relation
+indexes:
+  drucklayout_multi_nutzenlayout_index_idx:
+    fields: drucklayoutId, salesOrderMultiNutzenlayoutId, salesOrderId
+    unique: true

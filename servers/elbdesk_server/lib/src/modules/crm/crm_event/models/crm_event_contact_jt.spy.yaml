@@ -1,0 +1,11 @@
+class: CrmEventContactJT
+table: jt_crm_event_contacts
+fields:
+  crmEvent: CrmEventDTO?, relation(name=crm_contact_event)
+  contact: ContactDTO?, relation(name=crm_event_contact)
+
+  deletedAt: DateTime?
+  
+indexes:
+  crm_event_contact_index_idx:
+    fields: crmEventId, contactId

@@ -1,0 +1,61 @@
+# Flutter/Dart related
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Ignore MacOS system files
+**/.DS_Store
+
+# FVM Version Cache
+.fvm/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.iml
+
+# Melos
+.melos_tool/
+
+# Flutter specific
+**/build/
+**/.dart_tool/
+**/.package
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+
+# Exceptions
+!**/packages/**/lib/
+!**/packages/**/bin/
+!**/packages/**/example/
+
+# Temporary files
+*.tmp
+*.swp
+
+# Logs
+*.log
+
+# Coverage results
+coverage/
+
+# Other
+# Flutter generated files
+.flutter/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Package Config
+.packages
+
+# Certificates
+.certificates/
+
+**/migrations/
+**/migrations/migration_registry.txt
+**/repair-migration/
+
+# Cursor
+.cursor/

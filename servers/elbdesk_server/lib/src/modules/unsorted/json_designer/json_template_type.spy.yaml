@@ -1,0 +1,7 @@
+enum: JsonTemplateType
+serialized: byName
+
+values:
+  - speedy
+  - production_order
+  

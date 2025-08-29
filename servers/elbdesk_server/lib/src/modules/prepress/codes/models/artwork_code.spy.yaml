@@ -1,0 +1,32 @@
+class: ArtworkCodeDTO
+
+fields:
+  # The actual code value
+  value: String     
+
+  # Optional description or purpose
+  description: String?  
+
+  # Relation to artwork
+  
+
+  # Relation to artwork master
+  
+
+  # Relation to artwork code type
+  artworkCodeType: String
+
+  # * Code Relations *
+  # Named bidirectional relations to be able to include the child codes.
+  # The artworkCodeId is saved in the specific code table.
+
+  # Relation to 2OF5 code
+  code2of5: TwoOf5CodeDTO?
+
+  # Relation to Aztec code 
+  codeAztec: AztecCodeDTO?, 
+
+  # Relation to Template code
+  codeTemplate: TemplateCodeDTO?, 
+
+

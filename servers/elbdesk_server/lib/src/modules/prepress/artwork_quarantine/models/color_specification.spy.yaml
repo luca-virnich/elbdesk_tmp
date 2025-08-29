@@ -1,0 +1,19 @@
+# Color Specification DTO
+# Used in ArtworkQuarantine to save analyzed colors that are not in the database
+class: ColorSpecificationDTO
+table: color_specifications
+fields:
+  name: String?
+  type: String?
+  book: String?
+  egname: String?
+  frequency: double?
+  angle: double?
+  dotshape: String?
+  r: double?
+  g: double?
+  b: double?
+  attribute: String?
+  printingmethod: String?
+  databaseColor: ArtworkColorDTO?, relation(optional)
+  artworkQuarantineId: int?

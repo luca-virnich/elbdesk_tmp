@@ -1,0 +1,11 @@
+
+enum: SoiStepAndRepeatStatus
+serialized: byName
+
+values:
+ - wartenAufArtworks
+ - inArbeit
+ - bereitZurPruefung
+ - inPruefung
+ - completed
+ - canceled

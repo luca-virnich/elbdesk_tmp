@@ -1,0 +1,14 @@
+
+class: SalutationCodeFormularDTO
+table: ed_crm_salutation_code_formular
+
+fields:
+  languageCode: LanguageCodeDTO?, relation
+  salutationType: SalutationType
+  salutation: String
+  name1: ContactField
+  name2: ContactField
+  name3: ContactField
+  name4: ContactField
+
+  

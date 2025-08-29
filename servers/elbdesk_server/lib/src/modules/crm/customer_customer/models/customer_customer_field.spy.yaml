@@ -1,0 +1,34 @@
+# Customer Customer Field
+#
+# This enum defines the fields for the CustomerCustomerDTO
+# They can be used to filter and sort the CustomerCustomer entity
+#
+enum: CustomerCustomerField
+serialized: byName
+
+values:
+  - id
+  - customer
+  - customerCustomerContact
+
+  - filterByCustomerCustomerContactIdOrFullName
+  - customerCustomerContactCustomId
+  - customerCustomerContactFullName
+  - customerCustomerContactAddress
+  - customerCustomerContactAddress2
+  - customerCustomerContactPostCode
+  - customerCustomerContactCity
+  - customerCustomerContactState
+  - customerCustomerContactPhone
+  - customerCustomerContactEmail
+  - customerCustomerContactMobile
+  - customerCustomerContactCountryCode
+  - customerCustomerContactLanguageCode
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+    

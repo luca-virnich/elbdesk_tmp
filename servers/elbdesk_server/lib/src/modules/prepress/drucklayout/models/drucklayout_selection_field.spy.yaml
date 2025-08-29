@@ -1,0 +1,19 @@
+# Drucklayout Selection Field
+# 
+# A list of fields that can be used to filter and sort the Drucklayout Selection entity
+enum: DrucklayoutSelectionField
+serialized: byName
+
+values:
+  - id
+  - description
+  - drucklayoutPreSelectionId
+  
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

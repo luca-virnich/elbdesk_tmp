@@ -1,0 +1,9 @@
+enum: JsonFieldType
+serialized: byName
+
+values:
+  - text
+  - number
+  - boolean
+  - array
+  - object

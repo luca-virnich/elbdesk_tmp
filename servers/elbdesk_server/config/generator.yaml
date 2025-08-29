@@ -1,0 +1,7 @@
+type: server
+
+client_package_path: ../elbdesk_client
+
+modules:
+  elbdesk_backend_core:
+    nickname: core

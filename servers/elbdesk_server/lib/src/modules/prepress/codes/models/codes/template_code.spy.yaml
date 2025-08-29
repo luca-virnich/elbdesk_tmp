@@ -1,0 +1,32 @@
+class: TemplateCodeDTO
+
+fields:
+
+
+  # Size
+  codeSize: double?
+
+  # Error correction level (fehlerKorrektur)
+  errorCorrection: double?
+  
+  # Output resolution in DPI (ausgabeAufloesung)
+  outputResolution: double?
+  
+  # Bar width reduction (strichbreitenReduzierung)
+  barWidthReduction: double?
+  
+  # Device compensation (geraeteKompensation)
+  deviceCompensation: double?
+  
+  # Narrow bar width (schmalerStrich)
+  narrowBarWidth: double?
+  
+  # Cell size (zellengroesse)
+  cellSize: double?
+  
+  # Magnification factor (vergroesserung)
+  magnification: double?
+  
+  # Aspect ratio (verhaeltnis)
+  aspectRatio: double?
+

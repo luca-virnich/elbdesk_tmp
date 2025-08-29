@@ -1,0 +1,38 @@
+# CompanyDepartment
+#
+# This is the backend CompanyDepartment model
+# It is used to define the CompanyDepartment Table in the database and works as a DTO for the CompanyDepartment.
+# The model used in the frontend is based on this class and can be found in the client code.
+# The needed CRUD operations & endpoint methods are defined in the CompanyDepartmentEndpoint class
+#
+# The fields that can be used to display the CompanyDepartment information are defined in the CompanyDepartmentField enum
+# Which can be found in the companyDepartment_field.spy.yaml file
+#
+class: CompanyDepartmentDTO
+table: ed_crm_company_department
+fields:
+  # General fields
+  name: String?
+  description: String?
+
+  company: ContactDTO?, relation
+  employees: List<CompanyEmployeeDepartmentJT>?, relation(name=company_department_employee)
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String? 

@@ -1,0 +1,17 @@
+# BearerTypeSheetFedPressMinPlateDTO
+# Defines the Sheet Fed Press Minimum Plate Bearer model
+class: BearerTypeSheetFedPressMinPlateDTO
+table: prepress_bearer_type_sheet_fed_press_min_plate
+
+fields:
+  # Name of the machine control file
+  machineControlFile: String?
+
+  # Type of raster fields used 
+  rasterFieldType: String?
+
+  # Type of registration mark used
+  registrationMarkType: String?
+
+  # ATS (Automated Tracing System) type used for printing
+  atsType: String

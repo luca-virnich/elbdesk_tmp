@@ -1,0 +1,42 @@
+# Company Employee
+#
+# A CompanyEmployee resembles a Contact that is an employee of a Company
+#
+class: CompanyEmployeeDTO
+table: ed_crm_company_employee
+
+fields:
+
+  company: ContactDTO?, relation
+  employee: ContactDTO?, relation
+  position: String
+  active: bool
+  note: String
+
+  departments: List<CompanyEmployeeDepartmentJT>?, relation(name=company_employee_department)
+
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+# Index skipped to be able to work with deletedAt and reassignments
+# indexes:
+#   company_employee_employee_company_id_idx:
+#     fields: companyId, employeeId
+#     unique: true

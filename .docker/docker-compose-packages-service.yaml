@@ -1,0 +1,25 @@
+networks:
+  default:
+    name: serverpod-network
+    external: true
+
+services:
+  packages:
+    container_name: packages
+    restart: always
+    image: nginx:stable-alpine
+    volumes:
+      - /var/packages/storage:/usr/share/nginx/html
+      - /var/packages/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro 
+    environment:
+      - NGINX_HOST=packages.coe.elbdesk.cloud
+      - NGINX_PORT=80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.packages.rule=Host(`${SERVICE_HOST}`)"
+      - "traefik.http.routers.packages.entrypoints=websecure"
+      - "traefik.http.routers.packages.service=packages-service"
+      - "traefik.http.routers.packages.tls.certresolver=myresolver"
+      - "traefik.http.services.packages-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.packages.middlewares=packages-auth"
+      - "traefik.http.middlewares.packages-auth.basicauth.users=appahoiadmin:$$apr1$$XGRzog7d$$9iRw.2xEw7sPXKOdAwr5S0"

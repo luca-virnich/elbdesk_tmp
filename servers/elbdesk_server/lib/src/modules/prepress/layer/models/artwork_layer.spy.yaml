@@ -1,0 +1,27 @@
+# ArtworkLayerDTO
+#
+# An ArtworkLayerDTO resembles a single layer of an Artwork
+#
+# This is *not* a product part
+# A layer resembles a color or a specific part of the print process.
+#
+# This is called layer because the pdfs used by the client are "layered"
+# In these pdfs colors, die cut lines, etc. are sorted into separate layers and can be switched on and off
+# That way the it's easy to see which parts affect the print and how
+# 
+class: ArtworkLayerDTO
+
+fields:
+  # Layer type
+  layerType: ArtworkLayerType?
+
+  # Standard fields
+  layerName: String
+
+  # Printable
+  printable: bool
+
+  # Locked
+  locked: bool
+
+  

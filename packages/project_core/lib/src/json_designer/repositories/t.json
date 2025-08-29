@@ -1,0 +1,23 @@
+{
+  "num1": {
+    "name": "Nummer 1",
+    "value": 1.0,
+    "children": null
+  },
+  "num2": {
+    "name": "Nummer 2", 
+    "value": 2.0,
+    "children": null
+  },
+  "obj1": {
+    "name": "Object 1",
+    "value": null,
+    "children": {
+      "inObj1": {
+        "name": "in Object 1",
+        "value": 1.0,
+        "children": null
+      }
+    }
+  }
+}

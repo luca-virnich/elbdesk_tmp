@@ -1,0 +1,37 @@
+# The ServiceUserTokenDTO class
+#
+# Represents a service user token which is used to authenticate a service user
+#
+class: ServiceUserTokenDTO
+table: ed_user_service_user_token
+
+fields:
+  # Service token related fields
+  authKey: module:auth:AuthKey?, relation(optional)
+
+  tokenDescription: String
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+indexes:
+  # service token related indexes
+  service_user_token_auth_key_id_unique_idx:
+    fields: authKeyId
+    unique: true

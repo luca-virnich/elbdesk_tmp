@@ -1,0 +1,20 @@
+
+enum: PaymentCodeField
+serialized: byName
+
+values:
+  - id
+  - code
+  - dueDateCalculation
+  - discountDateCalculation
+  - discountPercentage
+  - calculateDiscountOnCreditNote
+  - description
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

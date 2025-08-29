@@ -1,0 +1,15 @@
+# Filter Field Type
+#
+# Lists the available types for a filter field
+#
+enum: FilterFieldType
+serialized: byName
+
+values:
+  - text
+  - number
+  - boolean
+  - date
+  - assignedUser
+
+

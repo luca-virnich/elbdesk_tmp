@@ -1,0 +1,31 @@
+name: Test migrations for coe_elbdesk_cloud Test
+
+on:
+  pull_request:
+    branches: [test]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  test-migrations:
+    if: "!contains(github.event.pull_request.labels.*.name, 'needs-force-migrations')"
+    name: Test migrations for coe_elbdesk_cloud Test
+    uses: ./.github/workflows/test-migrations-jobs.yml
+    with:
+      NAME: "coe_elbdesk_cloud"
+      PATH: "servers/elbdesk_server"
+      RUN_MODE: "test"
+      DATABASE_NAME: "postgres_test_database"
+      DATABASE_USER: "postgres_test_user"
+      DATABASE_PORT: "5432:5432"
+      OWNER: ${{ github.repository_owner }}
+      SERVERPOD_VERSION: "2.9.1"
+      FLUTTER_VERSION: "3.32.5"
+    secrets:
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD_TEST }}
+      SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
+      APP_ID: ${{ secrets.APP_ID }}
+      APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}

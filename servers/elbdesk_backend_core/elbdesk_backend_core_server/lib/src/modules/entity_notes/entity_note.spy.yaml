@@ -1,0 +1,28 @@
+# Note
+#
+# A Note is a simple text note that can be created by the user and can be attached to various entities
+#
+class: EntityNoteDTO
+table: ed_core_entity_note
+
+fields:
+  
+  message: String
+  hint: String?
+  entityId: int
+  tableType: String
+  mentions: List<MentionDTO>
+  
+  parentId: int?
+
+  # If we want to add a Notification from a System User 
+  # (without an User ID, we want to be able to have a Sender-Name 
+  # (e.g. in the Frontend then is "Notification from Automation Engine"). 
+  # This will only adopt when the senderId is null)
+  hardcodedSender: String?
+
+  # meta information
+  createdAt: DateTime?
+  createdById: int?
+  lastModifiedAt: DateTime?
+  deletedAt: DateTime?

@@ -1,0 +1,10 @@
+class: SalesOrderMultiNutzenlayoutLightDTO
+
+fields:
+  
+  
+  nutzenlayout: NutzenlayoutDTO
+  artworks: List<int>
+  salesOrderId: int
+  salesOrderMultiNutzenlayoutId: int
+  

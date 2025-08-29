@@ -1,0 +1,39 @@
+# ProductType
+#
+# ProductType lists the different types of products that can be created
+# This mainly explains the position of the product on the actual end end product
+#
+# Example: Coca Cola bottle front label-> ProductType: vorderseite (front side)
+#
+# See [ProductDTO] for more details
+#
+enum: ProductType
+serialized: byName
+
+values:
+  # Front side of the product
+  - vorderseite
+
+  # Back side of the product
+  - rueckseite
+
+  # Top of the product
+  - deckel
+
+  # Bottom of the product
+  - boden
+
+  # Wrapped all around the product
+  - banderole
+
+  # Multi-layer product
+  - multilayer
+
+  # zwei Artworks, die als ein Produkt gesehen werden, aber nicht als Multilayer, sondern 
+  # nebeneinander stehen, weil sie einem besonderen S&R unterliegen
+  - kit
+  - vorlageDigitaldruck
+
+
+  
+  

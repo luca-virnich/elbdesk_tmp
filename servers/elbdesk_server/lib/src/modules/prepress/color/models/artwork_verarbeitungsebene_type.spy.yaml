@@ -1,0 +1,20 @@
+# ArtworkVerarbeitungsebeneType
+# En: Artwork Processing Layer Type
+#
+# Defines the various processing levels of an artwork
+#
+# See [ArtworkDTO] for more details
+#
+enum: ArtworkVerarbeitungsebeneType
+serialized: byName
+
+values:
+  # Stanze - Die Cutter
+  - stanzen
+  # Bemaßung - Dimensions
+  - bemassung
+  # Lack - Varnish
+  - lack
+  # Keine - None
+  - keine
+  

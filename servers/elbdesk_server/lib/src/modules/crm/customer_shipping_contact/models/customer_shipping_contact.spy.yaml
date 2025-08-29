@@ -1,0 +1,22 @@
+# Customer Shipping Contact
+#
+# A CustomerShippingContact resembles a Customer that is a shipping contact of an Order
+#
+# This is used if one customer sends an order (And usually pays for it), but wants to ship the products to another customer
+#
+class: CustomerShippingContactDTO
+table: ed_crm_customer_shipping_contact
+
+fields:
+
+  customer: CustomerDTO?, relation
+  shippingContact: ContactDTO?, relation
+  isPrimary: bool
+  
+
+
+
+indexes:
+  customer_shipping_contact_unique_idx:
+    fields: customerId, shippingContactId
+    unique: true

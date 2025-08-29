@@ -1,0 +1,21 @@
+exception: ElbException
+fields:
+  # type of the exception
+  exceptionType: ElbExceptionType
+  # message to be shown to the user
+  message: String
+  # code of the exception
+  code: String?
+  # column name of the exception
+  columnName: String?
+  # constraint name of the exception
+  constraintName: String?
+  # table name of the exception
+  tableName: String?
+  # artifacts of the exception
+  artifacts: List<String>?
+  # field of the exception (on Field Exception)
+  field: String?
+  # database message of the exception (on Field Exception)
+  databaseExceptionMessage: String?
+  

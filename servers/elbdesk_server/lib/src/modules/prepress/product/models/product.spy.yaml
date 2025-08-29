@@ -1,0 +1,66 @@
+# Product
+#
+# A Product is a bundle of ProductParts and the underlying Artworks
+#
+# A Product resembles the actual end product of the customer customer from the client.
+#
+# For example a sticker label with 1 printed side.
+# -> Side 1: ProductPart -> Artwork - "Coca Cola front label"
+# -> Side 2: Glue - Not created by us
+#
+# The [ProductDTO] resembles the whole sticker label that is used in a SalesOrder
+#
+# The [ProductPartDTO] resembles the printed side of the sticker label and it's settings
+#
+# The [ArtworkDTO] resembles the actual artwork that is printed on the sticker label
+#
+class: ProductDTO
+table: ed_prepress_product
+fields:
+  serienId: int
+  serienIndex: int
+  serienIdString: String
+  customer: CustomerDTO?, relation
+  salesOrder: SalesOrderDTO?, relation
+  productMaster: ProductMasterDTO?, relation
+  artworks: List<ArtworkDTO>?, relation(optional,name=product_artworks)
+
+  
+  description: String
+
+  keywords: String
+  
+
+  # ProductType Enum as String
+  productType: String
+
+  # ArtworkPrintProcessType Enum as String
+  printProcessType: String
+  customerReference: String
+  
+  
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+indexes:
+  product_sales_order_id_idx:
+    fields: productMasterId, salesOrderId
+    unique: true
+  

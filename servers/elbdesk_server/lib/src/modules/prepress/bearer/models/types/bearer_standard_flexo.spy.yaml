@@ -1,0 +1,14 @@
+# BearerTypeStandardFlexoPrintDTO
+# Defines the Standard Flexo Print Bearer model
+class: BearerTypeStandardFlexoPrintDTO
+table: prepress_bearer_type_standard_flexo_print
+
+fields:
+  # Name of the machine control file 
+  machineControlFile: String?
+
+  # Type of raster fields used
+  rasterFieldType: String?
+
+  # Type of registration mark used
+  registrationMarkType: String?

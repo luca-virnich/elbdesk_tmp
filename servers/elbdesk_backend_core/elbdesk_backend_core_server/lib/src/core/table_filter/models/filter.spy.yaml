@@ -1,0 +1,10 @@
+# Filter
+#
+# Represents a filter
+# Used to filter a list of entities
+# See [FilterGroup] for more information
+#
+class: Filter
+
+fields:
+  filterGroups: List<FilterGroup>

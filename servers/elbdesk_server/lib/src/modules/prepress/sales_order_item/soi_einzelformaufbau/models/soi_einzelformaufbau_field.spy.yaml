@@ -1,0 +1,24 @@
+
+enum: SoiEinzelformaufbauField
+serialized: byName
+
+values:
+  - artworkId
+  - salesOrderItemId
+
+  # These will be displayed through the soi child
+  # Not defined in this entity 
+  # But we still want to display them in a Prepare Artwork Table
+  - salesOrderId
+  - description
+  - billableTime
+  - assignedUser
+  - version
+
+  # Meta
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft

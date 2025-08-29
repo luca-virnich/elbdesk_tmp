@@ -1,0 +1,50 @@
+# Artwork Template
+# 
+# This is used to create a new artwork from a pre-selection
+# -> This template could provide specific colors or settings
+# For example a customer always orders products with specific colors, print processes or settings
+# With the use of these templates, the employee can work more efficient by using a pre-defined template
+#
+class: ArtworkTemplateDTO
+table: ed_prepress_artwork_template
+fields:
+  #general
+  description: String
+  customer: CustomerDTO?, relation(optional)
+  artworkTemplateSelection: ArtworkTemplateSelectionDTO?, relation
+  artworkTemplatePreSelection: ArtworkTemplatePreSelectionDTO?, relation
+
+
+  # Trapping
+  trapping: TrappingDTO
+
+  layers: List<ArtworkLayerDTO>
+
+  # Bleed (Anschnitt)
+  anschnitt: double
+
+  # Screening lineature (Rasterangaben)
+  colors: List<ArtworkColorDTO>
+  
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+  
+    
+  

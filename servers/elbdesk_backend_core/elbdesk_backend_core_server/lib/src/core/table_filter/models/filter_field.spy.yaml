@@ -1,0 +1,14 @@
+# Filter Field
+#
+# Represents a field that can be used in a filter
+#
+class: FilterField
+
+fields:
+  fieldKey: String
+  value: String
+  type: FilterType
+  filterOperator: FilterOperator
+  uuid: String
+  fieldType: FilterFieldType
+  

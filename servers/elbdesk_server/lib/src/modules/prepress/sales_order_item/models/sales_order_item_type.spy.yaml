@@ -1,0 +1,13 @@
+# SalesOrderItemType
+# Defines the type of a SalesOrderItem
+enum: SalesOrderItemType
+serialized: byName
+
+values:
+
+ # new values
+ - prepareArtwork
+ - requestArtworkApproval
+ - einzelformaufbau
+ - consulting
+#  - createStepAndRepeat

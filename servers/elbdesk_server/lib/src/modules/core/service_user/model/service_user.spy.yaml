@@ -1,0 +1,43 @@
+# The ServiceUserDTO class
+#
+# Represents a service user and all of his related data
+#
+class: ServiceUserDTO
+table: ed_user_service_user
+
+fields:
+  # service related fields
+  userInfo: module:auth:UserInfo?, relation(optional)
+
+  serviceName: String
+  serviceDescription: String
+
+  isActive: bool
+
+  # Each token represents a user session that has access to the service
+  tokens: List<ServiceUserTokenDTO>?, relation(optional)
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+indexes:
+  # service related indexes
+  service_user_user_info_id_unique_idx:
+    fields: userInfoId
+    unique: true

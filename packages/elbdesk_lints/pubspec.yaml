@@ -1,0 +1,18 @@
+name: elbdesk_lints
+description: "A new Flutter package project."
+version: 2.0.0
+homepage: appahoi.com
+publish_to: none
+
+environment:
+  sdk: ">=3.6.0 <4.0.0"
+  flutter: ">=3.27.3"
+resolution: workspace
+
+dependencies:
+  analyzer: ^7.0.0
+  analyzer_plugin: 0.12.0
+  custom_lint_builder: 0.7.1
+  custom_lint: 0.7.1
+
+# dev_dependencies:

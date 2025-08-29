@@ -1,0 +1,12 @@
+export 'config/contact_fields.dart';
+export 'config/floating_contact_company_table_window_data.dart';
+export 'config/floating_contact_company_window_data.dart';
+export 'config/floating_contact_person_table_window_data.dart';
+export 'config/floating_contact_person_window_data.dart';
+export 'floating/floating_contact_card.dart';
+export 'floating/floating_contact_table.dart';
+export 'logic/contact_provider.dart';
+export 'models/contact.dart';
+export 'widgets/contact_table/contact_selection_table.dart';
+export 'widgets/contact_table/contact_table.dart';
+export 'widgets/contact_table/select_contact_table_for_shipping_address.dart';

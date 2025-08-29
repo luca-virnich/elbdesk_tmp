@@ -1,0 +1,6 @@
+# We are using this class for storing the configuration of the fields in the table
+class: TableFieldConfig
+
+fields:
+  width: double
+  fieldKey: String

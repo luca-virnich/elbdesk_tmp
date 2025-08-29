@@ -1,0 +1,48 @@
+# ProductMaster
+#
+# A ProductMaster is the master of a Product
+#
+# See [ProductDTO] for more details
+#
+class: ProductMasterDTO
+table: ed_prepress_product_master
+fields:
+  
+  description: String
+  serienId: int
+  serienIdString: String
+  serienIndex: int
+  artworks: List<ArtworkMasterDTO>?, relation(optional,name=product_master_artwork_master)
+
+  customer: CustomerDTO?, relation
+
+  
+  keywords: String
+
+  # ProductType Enum as String
+  productType: String
+
+
+  # ArtworkPrintProcessType Enum as String
+  printProcessType: String
+  customerReference: String
+  
+  
+   # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?

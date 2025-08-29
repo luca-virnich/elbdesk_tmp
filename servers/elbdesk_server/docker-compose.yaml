@@ -1,0 +1,59 @@
+version: '3.7'
+
+services:
+  # Development services
+  postgres:
+    image: postgres:16.3
+    ports:
+      - '8090:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: elbdesk
+      POSTGRES_PASSWORD: "cru99l3JjF82YqVTlGTDTFAN38WJqxNj"
+    volumes:
+      - elbdesk_data:/var/lib/postgresql/data
+    profiles:
+      - '' # Default profile
+      - dev
+  redis:
+    image: redis:6.2.6
+    volumes: 
+      - redis_data:/data
+    ports:
+      - '8091:6379'
+    command: redis-server --requirepass "iPB9d26v7EHimaYMDixFoMOEE-y5WMvS"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    profiles:
+      - '' # Default profile
+      - dev
+
+  # Test services
+  # postgres_test:
+  #   image: postgres:16.3
+  #   ports:
+  #     - '9090:5432'
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_DB: elbdesk_test
+  #     POSTGRES_PASSWORD: "ISsbC-Uy5W4ylxasftSjKNvs7nL-Kods"
+  #   volumes:
+  #     - elbdesk_test_data:/var/lib/postgresql/data
+  #   profiles:
+  #     - '' # Default profile
+  #     - test
+  # redis_test:
+  #   image: redis:6.2.6
+  #   ports:
+  #     - '9091:6379'
+  #   command: redis-server --requirepass "FevTudccvGveCotQnIEef4v17SFDuvQ-"
+  #   environment:
+  #     - REDIS_REPLICATION_MODE=master
+  #   profiles:
+  #     - '' # Default profile
+  #     - test
+
+volumes:
+  elbdesk_data:
+  redis_data:
+  # elbdesk_test_data:

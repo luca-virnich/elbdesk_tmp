@@ -1,0 +1,76 @@
+# TableType
+# All available table types have to be defined
+enum: TableType
+serialized: byName
+
+values:
+  # CRM
+  - contact
+  - contactPerson
+  - contactCompany
+  - customer
+  - customerContact
+  - address
+  - customerContacts
+  - companyEmployee
+  - companyDepartment
+  - departmentCode
+  - shippingMethod
+  - crmEvent
+
+  # Sales
+  - salesOrder
+  - salesOrderByCustomer
+  - salesOrderStatus
+  - salesOrderItem
+  
+
+  # Sales Order Item
+  - soiPrepareArtwork
+  - soiStepAndRepeat
+  - soiConsulting
+  - soiRequestArtworkApproval
+  - soiEinzelformaufbau
+  # Users
+  - appUser
+  - serviceUser
+
+  # Prepress
+  - bearer
+  - printLayout
+  
+  - prepressColorPalette
+  - customerColorSpec
+  - drucklayout
+  - drucklayoutPreSelection
+  - drucklayoutSelection
+
+  ## Artowrk
+  - artwork
+  - artworkMaster
+  - artworkTemplate
+  - artworkTemplatePreSelection
+  - artworkTemplateSelection
+  - artworkQuarantine
+  - artworkQuarantineGroup
+  - artworkLayer
+  - artworkColor
+  - artworkLog
+
+  - product
+  - productMaster
+
+  # Core
+  - entityLog
+  - entityLock
+  - countryCode
+  - languageCode
+  - paymentCode
+  - salutationCode
+  - appClient
+  - jsonTemplate
+  - globalSettings
+  - migrationMatsPerson
+  - migrationMatsCompany
+  - serverpodLog
+  - flutterLog

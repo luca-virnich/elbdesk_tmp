@@ -1,0 +1,19 @@
+# CompanyDepartment Field
+# 
+# A list of fields that can be used to filter and sort the CompanyDepartment entity
+enum: CompanyDepartmentField
+serialized: byName
+
+values:
+  - id
+  - name
+  - description
+
+  # Meta
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - isDraft
+  - deletedAt 
+  

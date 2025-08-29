@@ -1,0 +1,29 @@
+# Artwork Template Selection
+# 
+# This is a part of an artwork template and is the first "type" that is selected to choose a template for the creation of an artwork
+# See [ArtworkTemplate] for more information
+class: ArtworkTemplateSelectionDTO
+table: ed_prepress_artwork_template_selection
+fields:
+  artworkTemplatePreSelectionId: int, relation(parent=ed_prepress_artwork_template_pre_selection)
+  description: String
+  
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?

@@ -1,0 +1,13 @@
+# Drucklayout Sales Order Junction Table
+#
+# Used to link Drucklayouts to SalesOrders.
+#
+class: DrucklayoutSalesOrderJT
+table: jt_drucklayout_sales_order
+fields:
+  drucklayout: DrucklayoutDTO?, relation(name=drucklayout_sales_order)
+  salesOrder: SalesOrderDTO?, relation(name=sales_order_drucklayout)
+indexes:
+  drucklayout_sales_order_index_idx:
+    fields: drucklayoutId, salesOrderId    
+    unique: true

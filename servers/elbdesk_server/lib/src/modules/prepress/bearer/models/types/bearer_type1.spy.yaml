@@ -1,0 +1,11 @@
+# The Bearer Type 1 DTO class
+
+# This is the backend Bearer Type 1 model
+#
+class: BearerType1DTO
+table: prepress_bearer_type1
+
+fields:
+  marginLeft: double
+  marginRight: double
+  

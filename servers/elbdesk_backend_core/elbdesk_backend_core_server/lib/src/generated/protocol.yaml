@@ -1,0 +1,67 @@
+table:
+  - addTableConfig:
+  - deleteTableConfig:
+  - findTableConfigs:
+  - updateTableConfig:
+  - togglePrimaryConfig:
+appVersion:
+  - watchAppVersionUpdates:
+  - fetchLatestAppVersionManifest:
+  - requestCredentials:
+collapsibleCardSection:
+  - fetchCollapsibleCardSection:
+  - updateCollapsibleIdentifierSqlUnsafe:
+  - updateCollapsibleIdentifierSqlSafe:
+deeplinkCore:
+  - createDeeplink:
+  - getDeeplink:
+editRequestEndoint:
+  - streamEditRequests:
+  - watchRejectEditRequests:
+  - sendRequest:
+  - rejectRequest:
+entityAssignmentsCore:
+  - watchAddedAssignments:
+  - watchRemovedAssignments:
+entityNoteCore:
+  - watch:
+  - fetchNotes:
+  - createNote:
+  - updateNote:
+  - deleteNote:
+  - restoreNote:
+entityNoteNotification:
+  - watch:
+  - updateNotification:
+  - createNotification:
+  - markAsRead:
+  - markAsUnRead:
+  - markAsCleared:
+  - fetchUnreadNotifications:
+flutterLog:
+  - create:
+  - fetch:
+  - fetchById:
+heartbeat:
+  - watchHeartbeat:
+lightUser:
+  - watch:
+  - fetchById:
+  - fetchByUserInfoId:
+  - fetchAll:
+recentWindow:
+  - fetchRecentWindows:
+  - addRecentWindow:
+serverpodLog:
+  - fetchLogs:
+  - fetchById:
+time:
+  - watchServerTime:
+userSettings:
+  - fetchUserSettings:
+  - upsertUserSettings:
+  - updateCollapsibleIdentifierSqlUnsafe:
+  - updateCollapsibleIdentifierSqlSafe:
+  - resetCollapsibleIdentifier:
+  - updateRecentWindowFilterValues:
+  - saveRibbonConfigToServer:

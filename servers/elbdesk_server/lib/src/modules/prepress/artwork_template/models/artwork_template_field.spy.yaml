@@ -1,0 +1,33 @@
+# Artwork Template Field
+# 
+# A list of fields that can be used to filter and sort the Artwork Template entity
+enum: ArtworkTemplateField
+serialized: byName
+
+values:
+  - id
+  - description
+  - customer
+  - templateType
+  - artworkTemplateSelection
+  - artworkTemplatePreSelection
+
+  # Trapping
+  - trappNormal
+  - trappBlack
+  - trappBilder
+  - trappSonderfarben
+  - trappRueckzug
+  # Bleed (Anschnitt)
+  - anschnitt
+  # Ebenen
+  - layers
+  
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

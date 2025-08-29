@@ -1,0 +1,37 @@
+
+class: LanguageCodeDTO
+table: ed_crm_language_code
+
+fields:
+  code: String
+  languageName: String
+  isPrimary: bool
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+  
+indexes:
+  language_code_code_idx:
+    fields: code
+    unique: true
+
+  language_code_language_name_idx:
+    fields: languageName
+    unique: true

@@ -1,0 +1,26 @@
+# Global Settings
+#
+# This table manages the global settings of the application
+class: GlobalSettingsDTO
+table: ed_global_settings
+
+fields:
+  globalSettingsJson: String
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?

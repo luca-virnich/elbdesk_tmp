@@ -1,0 +1,36 @@
+# The table fields of a color
+enum: ArtworkColorField
+serialized: byName
+
+values:
+  - id
+  - colorName
+  - shortName
+  - color
+  - colorPalette
+  - l
+  - a
+  - b
+  - colorSpecType
+  - colorType
+
+  # VerarbeitungsEbene - Processing Layer
+  - verarbeitungsEbene
+  - printProcess
+  - screenLineature
+  - screenAngle
+  - screenPointForm
+  - boost
+  - customText
+  # table helper
+  - actions
+  - move
+  
+  # Meta information
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

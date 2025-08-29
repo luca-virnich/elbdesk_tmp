@@ -1,0 +1,36 @@
+# {{#pascalCase}}{{feature_name}}{{/pascalCase}}
+#
+# This is the backend {{#pascalCase}}{{feature_name}}{{/pascalCase}} model
+# It is used to define the {{#pascalCase}}{{feature_name}}{{/pascalCase}} Table in the database and works as a DTO for the {{#pascalCase}}{{feature_name}}{{/pascalCase}}.
+# The model used in the frontend is based on this class and can be found in the client code.
+# The needed CRUD operations & endpoint methods are defined in the {{#pascalCase}}{{feature_name}}{{/pascalCase}}Endpoint class
+#
+# The fields that can be used to display the {{#pascalCase}}{{feature_name}}{{/pascalCase}} information are defined in the {{#pascalCase}}{{feature_name}}{{/pascalCase}}Field enum
+# Which can be found in the {{#camelCase}}{{feature_name}}{{/camelCase}}_field.spy.yaml file
+#
+class: {{#pascalCase}}{{feature_name}}{{/pascalCase}}DTO
+#TODO(mason): Add proper module name
+table: ed_{{feature_name}}
+fields:
+  # General fields
+  name: String
+  description: String?
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String? 

@@ -1,0 +1,9 @@
+name: build_scripts
+description: Build scripts for ElbDesk
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  path: ^1.8.0
+  args: ^2.3.0

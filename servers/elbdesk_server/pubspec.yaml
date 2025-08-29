@@ -1,0 +1,39 @@
+name: elbdesk_server
+description: Starting point for a Serverpod server.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: ^3.6.0
+resolution: workspace
+
+
+dependencies:
+  serverpod: 2.9.1
+  serverpod_auth_server: 2.9.1
+  elbdesk_backend_core_server:
+    path: ../elbdesk_backend_core/elbdesk_backend_core_server
+    
+  elbdesk_shared:
+    path: ../../packages/elbdesk_shared
+  collection: 1.19.1
+  http: 1.2.2
+  uuid: 4.5.1
+  xml: 6.5.0
+
+  ahoi_file_storage:
+    git:
+      url: https://github.com/App-Ahoi/ahoi_file_storage.git
+      ref: 89eebe63bb12c7fc9b3e78e09035e733acfdaf76
+
+# dependency_overrides:
+#   serverpod:
+#     git:
+#       url: https://github.com/App-Ahoi/serverpod.git
+#       path: packages/serverpod
+#       ref: b4e9d4ada23f2d601dce22cdd08ec2a9434d2f27
+#   serverpod_auth_server:
+#     git:
+#       url: https://github.com/App-Ahoi/serverpod.git
+#       path: modules/serverpod_auth/serverpod_auth_server
+#       ref: b4e9d4ada23f2d601dce22cdd08ec2a9434d2f27

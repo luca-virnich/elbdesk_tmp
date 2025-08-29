@@ -1,0 +1,46 @@
+# Drucklayout
+#
+# This is the backend Drucklayout model
+# It is used to define the Drucklayout Table in the database and works as a DTO for the Drucklayout.
+# The model used in the frontend is based on this class and can be found in the client code.
+# The needed CRUD operations & endpoint methods are defined in the DrucklayoutEndpoint class
+#
+# The fields that can be used to display the Drucklayout information are defined in the DrucklayoutField enum
+# Which can be found in the drucklayout_field.spy.yaml file
+#
+class: DrucklayoutDTO
+table: ed_prepress_drucklayout
+fields:
+  # General fields
+  title: String
+  description: String?
+
+  customer: CustomerDTO?, relation(optional)
+  salesOrders: List<DrucklayoutSalesOrderJT>?, relation(name=drucklayout_sales_order, optional)
+
+  # Nutzenlayout relations
+  singleNutzenlayouts: List<DrucklayoutSingleNutzenlayoutJT>?, relation(name=drucklayout_single_nutzenlayout, optional)
+  multiNutzenlayouts: List<DrucklayoutMultiNutzenlayoutJT>?, relation(name=drucklayout_multi_nutzenlayout, optional)
+
+  drucklayoutSelection: DrucklayoutSelectionDTO?, relation
+  drucklayoutPreSelection: DrucklayoutPreSelectionDTO?, relation
+  
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String? 

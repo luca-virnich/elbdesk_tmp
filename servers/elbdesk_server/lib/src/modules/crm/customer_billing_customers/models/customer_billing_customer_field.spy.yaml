@@ -1,0 +1,23 @@
+enum: CustomerBillingCustomerField
+serialized: byName
+
+values:
+  - id
+  - customer
+  - billingCustomer
+  - isPrimary
+
+  - filterByBillingCustomerIdOrFullName
+  - billingCustomerCustomId
+  - billingCustomerFullName
+  - billingCustomerAddress
+  - billingCustomerAddress2
+  - billingCustomerPostCode
+  - billingCustomerCity
+  - billingCustomerState
+  - billingCustomerPhone
+  - billingCustomerEmail
+  - billingCustomerMobile
+  - billingCustomerCountryCode
+  - billingCustomerLanguageCode 
+  

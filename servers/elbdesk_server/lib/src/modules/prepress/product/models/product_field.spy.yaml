@@ -1,0 +1,48 @@
+# ProductField
+#
+# ProductField lists the different fields that can be used to sort and filter products
+#
+# See [ProductDTO] for more details
+#
+enum: ProductField
+serialized: byName
+
+values:
+  - id
+  
+  # Series
+  - serienId
+  - serienIdString
+  - serienIndex
+
+  - customer
+  - salesOrder
+  - productMaster
+  - artworks
+  - productId
+  - productPartId
+
+  - description
+
+  # Keywords 1
+  - keywords
+
+  
+
+  # Customer Reference
+  - customerReference
+  - printProcessType
+
+
+
+
+  - productType
+  
+  # Meta information
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft
+  

@@ -1,0 +1,26 @@
+
+# Spotlight Type
+#
+# Lists the available types for the spotlight search functionality
+#
+enum: SpotlightType
+serialized: byName
+
+values:
+  
+  - general
+  - contact
+  - newContact
+  - newSalesOrder
+  - salesOrder
+  - customer
+  - searchCustomer
+  - searchContact
+  - searchSalesOrder
+  
+  - settings
+  
+   
+
+  
+

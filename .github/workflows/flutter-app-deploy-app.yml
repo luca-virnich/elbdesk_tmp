@@ -1,0 +1,95 @@
+name: Deploy Flutter App
+
+on:
+  workflow_call:
+    inputs:
+      REGISTRY:
+        required: true
+        type: string
+      # IMAGE_NAME:
+      #   required: true
+      #   type: string
+      GHCR_ORG:
+        required: true
+        type: string
+      OWNER:
+        required: true
+        type: string
+      FLUTTER_APP:
+        required: true
+        type: string
+      SHOULD_RUN_JOB:
+        required: true
+        type: boolean
+    secrets:
+      EMAIL:
+        required: true
+      SSH_PRIVATE_KEY:
+        required: true
+      SSH_HOST:
+        required: true
+      SSH_USER:
+        required: true
+      APP_ID:
+        required: true
+      APP_PRIVATE_KEY:
+        required: true
+
+jobs:
+  deploy-app:
+    if: inputs.SHOULD_RUN_JOB
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install ssh keys
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if Traefik container is running
+        id: check-traefik
+        run: |
+          if docker ps --filter "name=traefik" --filter "status=running" | grep -q "traefik"; then 
+            echo "Traefik is running"
+            echo "continue-deployment=false" >> $GITHUB_ENV
+          else 
+            echo "Traefik is not running"
+            echo "continue-deployment=true" >> $GITHUB_ENV
+          fi
+        env:
+          DOCKER_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+
+      - name: Run docker-compose-proxy if Traefik is not running
+        if: env.continue-deployment == 'true'
+        run: |
+          docker compose -f ./servers/elbdesk_server/docker-compose-proxy.yaml pull
+          docker compose -f ./servers/elbdesk_server/docker-compose-proxy.yaml up -d
+        env:
+          DOCKER_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+          EMAIL: ${{ secrets.EMAIL }}
+
+      - name: Run docker-compose for ${{ fromJson(inputs.FLUTTER_APP).RUN_MODE }}  
+        run: |
+          docker compose -p ${{ fromJson(inputs.FLUTTER_APP).RUN_MODE }} -f ./${{ fromJson(inputs.FLUTTER_APP).PATH }}/docker-compose.yaml pull
+          docker compose -p ${{ fromJson(inputs.FLUTTER_APP).RUN_MODE }} -f ./${{ fromJson(inputs.FLUTTER_APP).PATH }}/docker-compose.yaml up -d
+        env:
+          DOCKER_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+          EMAIL: ${{ secrets.EMAIL }}
+          GHCR_ORG: ${{ inputs.GHCR_ORG }}
+          APP_NAME: ${{ fromJson(inputs.FLUTTER_APP).NAME }}
+          ENV_NAME: ${{ fromJson(inputs.FLUTTER_APP).RUN_MODE }}
+          APP_HOST: ${{ fromJson(inputs.FLUTTER_APP).APP_HOST }}
+          API_HOST: ${{ fromJson(inputs.FLUTTER_APP).API_HOST }}
+
+      - name: cleanup
+        run: rm -rf ~/.ssh

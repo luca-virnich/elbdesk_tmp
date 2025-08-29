@@ -1,0 +1,29 @@
+# Bearer Type
+#
+# Defines possible types of the Bearer object
+#
+enum: BearerType
+serialized: byName
+
+values:
+  - none
+  - type1
+  - type2
+
+ # sur1: Standard rotary flexo printing
+  - standardFlexoPrint
+
+ # sur6: Standard rotary flexo printing with multilayer configuration
+  - flexoPrintMultilayer
+
+ # sur2: Translating sheet-fed press with minimum plate width, printing on ATS (e.g., Viva340)
+  - sheetFedPressMinPlate
+
+ # sur3: Translating sheet-fed press where plate width equals substrate width (e.g., Viva420)
+  - sheetFedPressPlateEqualsSub
+
+ # sur4: Translating offset press with fixed plate sizes (e.g., Viva420)
+  - offsetPressFixedPlate
+
+ # sur5: Translating sheet-fed press with fixed plate size (e.g., T180)
+  - sheetFedPressFixedPlate

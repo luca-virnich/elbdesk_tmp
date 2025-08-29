@@ -1,0 +1,76 @@
+enum: ElbExceptionMessage
+serialized: byName
+
+values:
+  # Generic
+  - invalidSessionId
+  - entityNotFound
+  - modifiedByAnotherUser
+  - alreadyDeleted
+
+  # User
+  - userNotAuthenticated
+  - noPermissions
+  
+
+  # AppUser
+  - appUserFirstNameAndLastNameCannotBeEmpty
+  - appUserInitialsAlreadyExists
+  - appUserEmailAlreadyExists
+  - appUserNameAlreadyExists
+
+  # ServiceUser
+  - serviceUserServiceNameCannotBeEmpty
+  - serviceUserServiceDescriptionCannotBeEmpty
+  - serviceUserNameAlreadyExists
+  
+  # CompanyEmployee
+  - companyEmployeeAlreadyAssigned
+
+  # Customer
+  - contactAlreadyAssignedAsShippingAddress
+  - customerAlreadyAssignedAsBillingAddress
+  - customerOrContactNotFound
+  # CustomerCustomer
+  - customerCustomerAlreadyAssigned
+
+  # soiArtwork
+  - artworkAlreadyInSoiPrepareArtwork
+  - prepareArtworkAlreadyAdded
+  - artworkAlreadyInAnotherSalesOrder
+
+  # soiRequestArtworkApproval
+  - artworkApprovalAlreadyAdded
+
+  # DataImport
+  - dataImportAttachmentRemovalFailed
+  - dataImportMultipleAttachmentsNotAllowed
+  - dataImportFileProcessingFailed
+  - dataImportFileCleanupFailed
+  - dataImportFileAnalysisFailed
+  - dataImportNoFileAccess
+  - dataImportNoPermissionOutputFolder
+  
+  # Files
+  - invalidFileTypeOnlyPdfAndZip
+  - invalidFileTypeOnlyZip
+  - invalidFileTypeOnlyPdf
+  - filePathAccess
+  - fileOperationException
+
+  # Migration
+  - migrationAborted
+
+  # Product
+  - serienIndexNotAvailable
+  - artworkTemplateNotFound
+  - productNotFound
+  - productMasterNotFound
+  - productMasterAlreadyInSalesOrder
+  - artworkQuarantineNotFound
+  - unfinishedArtworksFromProductInOtherSalesOrder 
+
+  
+  
+ 
+  

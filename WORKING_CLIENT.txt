@@ -1,0 +1,11 @@
+
+changes
+elbdesk_client_core_server
+to
+elbdesk_server_core_client
+
+
+import 'package:elbdesk_server_core_client/src/protocol/core/table_filter/models/sort.dart'
+    as _i4;
+import 'package:elbdesk_server_core_client/src/protocol/core/table_filter/models/filter.dart'
+    as _i5;

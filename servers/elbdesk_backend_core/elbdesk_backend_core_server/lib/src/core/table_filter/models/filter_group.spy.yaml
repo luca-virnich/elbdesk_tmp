@@ -1,0 +1,9 @@
+# Filter Group
+#
+# Represents a group of filters [FilterField]
+#
+class: FilterGroup
+
+fields:
+  filters: List<FilterField>
+  nextOperator: FilterOperator

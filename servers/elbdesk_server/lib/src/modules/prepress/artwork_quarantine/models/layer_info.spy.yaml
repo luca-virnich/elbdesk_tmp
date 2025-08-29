@@ -1,0 +1,8 @@
+# Layer Info DTO
+# Parsed from artwork XML file
+# Used in QuarantineArtworkXmlDataDTO
+class: LayerInfoDTO
+fields:
+  name: String
+  printable: bool
+  locked: bool

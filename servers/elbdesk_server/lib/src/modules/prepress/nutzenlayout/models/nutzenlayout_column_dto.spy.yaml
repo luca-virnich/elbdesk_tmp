@@ -1,0 +1,9 @@
+
+class: NutzenlayoutColumnDTO
+
+fields:
+  
+  gapVertical: double
+  
+  offset: double
+  cells: List<NutzenlayoutCellDTO>

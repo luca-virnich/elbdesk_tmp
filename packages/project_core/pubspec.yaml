@@ -1,0 +1,55 @@
+name: project_core
+description: "A new Flutter package project."
+version: 0.0.1
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+homepage:
+resolution: workspace
+environment:
+  sdk: ^3.6.0
+  flutter: ">=3.27.3"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  elbdesk_client:
+  elbdesk_ui:
+  elbdesk_crm:
+  elbdesk_core:
+  elbdesk_prepress:
+  elbdesk_sales:
+  elbdesk_window_manager:
+  elbdesk_platform_info:
+  elbdesk_shared:
+    path: ../../packages/elbdesk_shared
+
+  flutter_hooks: 0.20.5
+  freezed_annotation: 2.4.4
+  hooks_riverpod: 2.6.1
+  json_annotation: 4.9.0
+  riverpod_annotation: 2.6.1
+  serverpod_flutter: 2.9.1
+  serverpod_auth_client: 2.9.1
+  serverpod_auth_shared_flutter: 2.9.1
+  serverpod_auth_email_flutter: 2.9.1
+  
+  
+  
+  
+  elbdesk_backend_core_client:
+    path: ../../servers/elbdesk_backend_core/elbdesk_backend_core_client
+
+dev_dependencies:
+  json_serializable: 6.9.3
+  flutter_lints: ^5.0.0
+  build_runner: 2.4.14
+  riverpod_generator: 2.6.4
+  freezed: 2.5.8
+  
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  generate: true

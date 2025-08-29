@@ -1,0 +1,7 @@
+arb-dir: lib/l10n
+template-arb-file: elb_sales_l10n_en.arb
+output-localization-file: elb_sales_localizations.dart
+output-class: ElbSalesLocalizations
+synthetic-package: false
+output-dir: lib/l10n
+nullable-getter: false

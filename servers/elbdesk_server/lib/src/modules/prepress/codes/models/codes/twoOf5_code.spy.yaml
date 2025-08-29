@@ -1,0 +1,19 @@
+class: TwoOf5CodeDTO
+
+fields:
+
+
+  # Bar width reduction (strichbreitenReduzierung)
+  barWidthReduction: double?
+  
+  # Device compensation (geraeteKompensation)
+  deviceCompensation: double?
+  
+  # Narrow bar width (schmalerStrich)
+  narrowBarWidth: double?
+  
+  # Aspect ratio (verhaeltnis)
+  aspectRatio: double?
+
+
+  

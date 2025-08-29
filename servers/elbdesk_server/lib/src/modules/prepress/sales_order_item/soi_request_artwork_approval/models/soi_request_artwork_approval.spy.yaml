@@ -1,0 +1,37 @@
+class: SoiRequestArtworkApprovalDTO
+table: ed_prepress_soi_request_artwork_approval
+fields:
+
+  # The artwork associated with this soi prepare artwork
+  artwork: ArtworkDTO?, relation
+  artworkMasterId: int
+  approvalType: String
+  
+  # The parent sales order item
+  salesOrderItem: SalesOrderItemDTO?, relation
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+indexes:
+  soi_request_artwork_approval_artwork_idx:
+    fields: artworkId
+    unique: true
+  
+      

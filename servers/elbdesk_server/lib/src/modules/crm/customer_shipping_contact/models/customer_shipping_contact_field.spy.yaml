@@ -1,0 +1,22 @@
+enum: CustomerShippingContactField
+serialized: byName
+
+values:
+  - id
+  - customer
+  - shippingContact
+
+  - filterByShippingContactIdOrFullName
+  - shippingContactCustomId
+  - shippingContactFullName
+  - shippingContactAddress
+  - shippingContactAddress2
+  - shippingContactPostCode
+  - shippingContactCity
+  - shippingContactState
+  - shippingContactPhone
+  - shippingContactEmail
+  - shippingContactMobile
+  - shippingContactCountryCode
+  - shippingContactLanguageCode
+  

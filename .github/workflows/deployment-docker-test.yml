@@ -1,0 +1,98 @@
+name: Deploy to Test
+
+on:
+  # pull_request:
+  #   branches: [test]
+  #   types: [closed]
+  workflow_dispatch:
+    inputs:
+      force_migration:
+        description: "Force migration"
+        required: true
+        default: false
+        type: boolean
+      build_windows:
+        description: "Build Windows MSIX"
+        required: true
+        default: false
+        type: boolean
+      version:
+        description: "Version for the web app and Windows MSIX build (semver format: X.Y.Z[+build])"
+        required: false
+        type: string
+      commit_ref:
+        description: "Commit SHA or ref to build Windows MSIX from (leave empty for latest)"
+        required: false
+        type: string
+
+run-name: Deploy to Test ${{ inputs.build_windows == true && format('(and build Windows MSIX v{0})', inputs.version) || '' }}
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  call-deployment-docker-jobs:
+    if: github.ref_name == 'test'
+    # if: github.event.pull_request.merged == true
+    uses: ./.github/workflows/deployment-docker-jobs.yml
+    with:
+      REGISTRY: "ghcr.io"
+      GHCR_ORG: "app-ahoi"
+      OWNER: "${{ github.repository_owner }}"
+      IMAGE_NAME: ${{ github.repository }}
+      FORCE_MIGRATION: ${{ inputs.force_migration }}
+      WEB_APP_VERSION: ${{ inputs.version }}
+      SERVERPOD_SERVERS: '[
+        {
+        "NAME": "coe_elbdesk_cloud",
+        "PATH": "servers/elbdesk_server",
+        "RUN_MODE": "test",
+        "API_HOST": "test.api.coe.elbdesk.cloud",
+        "INSIGHTS_HOST": "test.insights.coe.elbdesk.cloud",
+        "WEB_HOST": "test.web.coe.elbdesk.cloud",
+        "DATABASE_HOST": "coe_elbdesk_cloud-test-postgres-1",
+        "REDIS_HOST": "redis.private-test.elbdesk.cloud",
+        "DATABASE_NAME": "coe_test",
+        "DATABASE_USER": "postgres_test",
+        "DATABASE_PORT": "127.0.0.1:5430:5432",
+        "FORCE_MIGRATION_LABEL": "needs-force-migrations",
+        "SERVERPOD_VERSION": "2.9.1",
+        }
+        ]'
+      FLUTTER_APPS: '[
+        {
+        "NAME": "coe_elbdesk_app",
+        "PATH": "apps/elbdesk_app",
+        "PACKAGES_PATH": "packages",
+        "SERVERPOD_CLIENT_PATH": "servers/elbdesk_client",
+        "RUN_MODE": "test",
+        "APP_HOST": "test.coe.elbdesk.cloud",
+        "API_HOST": "https://test.api.coe.elbdesk.cloud/",
+        "FLUTTER_VERSION": "3.32.5"
+        }
+        ]'
+
+    secrets:
+      EMAIL: ${{ secrets.EMAIL }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD_TEST }}
+      SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      APP_ID: ${{ secrets.APP_ID }}
+      APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+
+  build-windows:
+    if: inputs.build_windows == true && inputs.version != null && github.ref_name == 'test'
+    uses: ./.github/workflows/build-windows-msix.yml
+    with:
+      version: ${{ inputs.version }}
+      commit_ref: ${{ inputs.commit_ref }}
+      OWNER: "${{ github.repository_owner }}"
+    secrets:
+      APP_ID: ${{ secrets.APP_ID }}
+      APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+      PFX_BASE64: ${{ secrets.PFX_BASE64 }}
+      PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }}
+      PACKAGES_SERVICE_AUTH: ${{ secrets.PACKAGES_SERVICE_AUTH }}

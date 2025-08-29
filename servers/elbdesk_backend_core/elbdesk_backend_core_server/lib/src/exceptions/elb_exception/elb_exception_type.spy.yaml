@@ -1,0 +1,14 @@
+enum: ElbExceptionType
+serialized: byName
+
+values:
+  - unauthorized
+  - forbidden
+  - conflict
+  - notFound
+  - fileOperationException
+  - validationFieldError
+  - validationFormError
+  - unknown
+ 
+  

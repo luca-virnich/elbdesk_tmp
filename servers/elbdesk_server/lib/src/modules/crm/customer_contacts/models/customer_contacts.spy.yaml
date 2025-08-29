@@ -1,0 +1,31 @@
+# Relation between a customer and contacts, which acts as different addresses for the same customer
+# like delivery address, billing address, etc.
+
+class: CustomerContactsDTO
+table: ed_crm_customer_contacts
+
+fields:
+
+  customer: CustomerDTO?, relation
+  contact: ContactDTO?, relation
+  type: CustomerContactsType
+  isPrimary: bool
+  
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?

@@ -1,0 +1,10 @@
+
+enum: ArtworkAdditionalDataField
+serialized: byName
+
+values:
+  - customerId
+  - customSalesOrderId
+  - artworkId
+  - width
+  - height

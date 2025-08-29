@@ -1,0 +1,78 @@
+# Artwork Color DTO
+#
+# Used inside of an Artwork to define a color layer
+#
+# See [ArtworkDTO] for more details
+#
+class: ArtworkColorDTO
+table: ed_prepress_artwork_color
+
+fields:
+  # CoeColor name
+  colorName: String
+
+  # Short name
+  shortName: String
+
+  # Hex code
+  color: String?
+
+  l: double
+  a: double
+  b: double
+
+  customText: String?
+ 
+
+ # (Kodak, Standard, Quartz)
+  colorSpecType: String?
+  # Color Type (e.g. normal, opak, etc.)
+  colorType: String?
+
+  verarbeitungsEbene: String?
+
+  # Print Type (e.g. flexo, offset, etc.)
+  printProcess: String?
+
+  # Screen lineature (Rasterweite)
+  screenLineature: double?
+
+  # Screen angle (Rasterwinkel)
+  screenAngle: double?
+
+  # Screen point form (Rasterpunktform)
+  screenPointForm: String?
+
+  boost: double?
+
+
+  # farbbuch zu jedem kunden
+  ## mehree farbbueche je kunde
+  # CoeColor Book Relation
+  colorPalette: PrepressColorPaletteDTO?, relation(optional,name=prepress_color_palette_artwork_color)
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+
+
+
+#lab
+## lightness: 0 - 100
+## a: gruen nach rote: -128 - 127
+## b: blau nach gelbe: -128 - 127

@@ -1,0 +1,17 @@
+# Product Log
+# 
+# A list of values that can be used to filter and sort the Product Log entity
+class: ProductLogDTO
+table: ed_prepress_product_log
+fields:
+  
+  entityId: int
+  salesOrderId: int
+  salesOrderCustomId: int
+  oldValue: String
+  newValue: String
+  field: String
+  tableType: TableType
+  
+  updatedAt: DateTime
+  updatedById: int?

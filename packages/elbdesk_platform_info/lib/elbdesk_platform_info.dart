@@ -1,0 +1,1 @@
+export 'src/elbdesk_platform_info.dart';

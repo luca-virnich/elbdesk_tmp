@@ -1,0 +1,6 @@
+enum: SalutationType
+serialized: byName
+
+values:
+  - formal
+  - informal

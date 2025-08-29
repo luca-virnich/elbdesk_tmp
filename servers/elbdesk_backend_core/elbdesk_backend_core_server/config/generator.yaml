@@ -1,0 +1,5 @@
+type: module
+nickname: backend_core
+
+client_package_path: ../elbdesk_backend_core_client
+server_test_tools_path: test/integration/test_tools

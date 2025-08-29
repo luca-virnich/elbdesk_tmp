@@ -1,0 +1,17 @@
+class: AztecCodeDTO
+
+fields:
+
+
+  # Symbol size (symbolGroesse)
+  symbolSize: double?
+  
+  # Error correction level (fehlerKorrektur)
+  errorCorrection: double?
+  
+  # Device compensation (geraeteKompensation)
+  deviceCompensation: double?
+  
+  # Cell size (zellengroesse)
+  cellSize: double?
+

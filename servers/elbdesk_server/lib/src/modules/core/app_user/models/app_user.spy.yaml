@@ -1,0 +1,78 @@
+# The AppUserDTO class
+#
+# Represents an app user and all of his related data
+#
+
+
+# ! We can not work with unique fieds here, because when we create a new user, we need to be able to save it as a draft
+# ! (creation of multiple users at the same time will crash, because unique fields will both be blank).
+class: AppUserDTO
+table: ed_user_app_user
+
+fields:
+  # Defines a contact that is to be created at the creation of the customer.
+  # because every customer needs an address and communication information
+  # and we shouldn't be able to save a customer without it.
+  userInfo: module:auth:UserInfo?, relation(optional)
+
+  
+  # assignedSalesOrderItems: List<SalesOrderItemDTO>?, relation(optional, name=assigned_app_user_sales_order_item)
+  
+  # person related fields
+  firstName: String?
+  lastName: String?
+  initials: String?
+  
+  birthDate: DateTime?
+
+  # primary address details
+  address: String
+  address2: String
+  
+  postCode: String
+  city: String
+  state: String
+  countryCode: CountryCodeDTO?, relation(optional)
+
+  # contact details
+  phone: String
+  mobile: String
+  privateEmail: String
+  
+
+  # company information
+  employeeNumber: String
+  entryDate: DateTime?
+  terminationDate: DateTime?
+  department: DepartmentCodeDTO?, relation(optional)
+  position: String
+  costCenter: String
+  isActive: bool
+
+  # meta information
+  ## created
+  createdAt: DateTime
+  createdById: int?
+  ## last modified
+  lastModifiedAt: DateTime?
+  lastModifiedById: int?
+
+  ## deleted
+  deletedAt: DateTime?
+  deletedById: int?
+  ## edited
+  editingById: int?
+  editingSince: DateTime?
+  ## draft
+  isDraft: bool
+  ## edit session
+  editingSession: String?
+  
+
+indexes:
+  app_user_name_idx:
+    fields: firstName, lastName
+    unique: true
+  app_user_initials_idx:
+    fields: initials
+    unique: true

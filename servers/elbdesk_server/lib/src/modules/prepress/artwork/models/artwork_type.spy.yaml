@@ -1,0 +1,18 @@
+# Artwork Type
+# 
+# A list of possible types that an artwork can have
+# Indicates the actual position of the artwork on a printed product
+# E.g. Front -> The front side of a single sticker
+# E.g. Back -> The back side of a single sticker
+#
+# This is *not* the side of the end product, that the sticker is applied to, 
+# but the actual position of the artwork on the printed product
+enum: ArtworkType
+serialized: byName
+
+values:
+  # Front
+  - front
+  # Back
+  - back
+  

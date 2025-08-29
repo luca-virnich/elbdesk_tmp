@@ -1,0 +1,14 @@
+# Print Process Type
+#
+# Defines possible printing process types
+enum: ArtworkPrintProcessType
+serialized: byName
+
+values:
+  - flexodruck
+  - siebdruck
+  - buchdruck
+  - digitaldruck
+  - offsetdruck
+  
+  

@@ -1,0 +1,49 @@
+# The UserSettingsDTO class
+#
+# This class is used to save the user settings to the database
+#
+# See [UserSettingsEndpoint] for how it's used
+#
+class: UserSettingsDTO
+table: ed_core_user_settings
+
+fields:
+  # The userId of the user that owns the settings
+  userId: int?, scope=serverOnly
+
+  # The theme that the user has set
+  appTheme: AppTheme
+
+  # The locale that the user has set
+  appLocale: AppLocale
+
+  # The selected color of the inactive floating overlay that is used for 'inactive' floating windows
+  # -> These are the floating windows that are currently not in front
+  inactiveFloatingOverlayColor: String, default='28000000'
+  # The colors that are safed for the inactive floating overlay
+  inactiveFloatingOverlaySavedColors: List<String>
+  
+
+  # Whether the user has enabled the tooltip feature
+  showTooltips: bool, default=true
+
+  # Whether the user has enabled the table prefix string
+  enableTablePrefix: bool, default=true
+
+  # Whether the user has enabled reduce motion
+  reduceMotion: bool, default=false
+
+  # Whether the user has enabled drag window out of main window
+  dragWindowOutOfMainWindow: bool, default=true
+
+  # Whether the user has enabled collapse card sections
+  defaultCollapseCardSections: bool?, default=false
+
+  # The collapse card sections that the user has enabled
+  collapseCardSection: Map<String, bool>?
+
+  # The filter values for the recent windows
+  recentWindowFilterValues: Map<String, bool>?
+
+  # Whether the user has enabled small ribbons
+  ribbonConfigs: Map<String, UserRibbonConfigDTO>?

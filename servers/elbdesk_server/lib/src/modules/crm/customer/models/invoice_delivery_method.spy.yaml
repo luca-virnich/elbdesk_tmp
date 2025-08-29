@@ -1,0 +1,7 @@
+enum: InvoiceDeliveryMethod
+serialized: byName
+
+values:
+  - email
+  - post
+  

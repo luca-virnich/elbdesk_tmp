@@ -1,0 +1,26 @@
+# Bearer Field
+#
+# This enum defines the various fields that can be used with the Bearer Table
+# Each field name has to be the same name as the field in the BearerDTO class
+#
+# When adding a new property to the BearerDTO class a new value should also
+# be added to this enum to ensure that the frontend can display the new field
+#
+enum: BearerField
+serialized: byName
+
+values:
+  - id
+  - type
+  - bearerName
+  - description
+  - longText
+  - costCenterCode
+
+  # Meta Fields
+  - createdAt
+  - createdBy
+  - editingSince
+  - editingBy
+  - deletedAt
+  - isDraft

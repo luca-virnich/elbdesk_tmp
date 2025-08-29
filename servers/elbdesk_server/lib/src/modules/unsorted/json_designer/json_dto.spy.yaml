@@ -1,0 +1,14 @@
+
+
+class: JsonDTO
+
+
+fields:
+  name: String
+  type: JsonFieldType
+  jsonKey: String
+  jsonValue: String
+  uuid: String
+  children: Map<String, JsonDTO>?
+
+  

@@ -1,0 +1,44 @@
+name: elbdesk_crm
+description: "A new Flutter package project."
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.6.0
+  flutter: ">=3.27.3"
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_hooks: 0.20.5
+  freezed_annotation: 2.4.4
+  hooks_riverpod: 2.6.1
+  json_annotation: 4.9.0
+  riverpod_annotation: 2.6.1
+
+  elbdesk_client:
+  elbdesk_ui:
+  elbdesk_core:
+  elbdesk_sales:
+  elbdesk_prepress:
+  elbdesk_window_manager:
+  elbdesk_platform_info:
+  project_core:
+  elbdesk_backend_core_client:
+    path: ../../servers/elbdesk_backend_core/elbdesk_backend_core_client
+  
+  
+
+   
+
+dev_dependencies:
+  elbdesk_lints:
+  freezed: 2.5.8
+  json_serializable: 6.9.3
+  riverpod_generator: 2.6.4
+  build_runner: 2.4.14
+
+
+flutter:
+  generate: true

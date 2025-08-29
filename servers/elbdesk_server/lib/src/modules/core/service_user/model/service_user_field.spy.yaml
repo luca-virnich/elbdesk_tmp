@@ -1,0 +1,28 @@
+# Service User Field
+#
+# Lists the available fields of the ServiceUserDTO
+#
+enum: ServiceUserField
+serialized: byName
+
+values:
+  - id
+  - userInfoId
+  - userIdentifier
+  - created
+  - scopeNames
+  - blocked
+
+  - serviceName
+  - serviceDescription
+
+  - isActive
+
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  
+  - deletedAt
+  - isDraft
+  

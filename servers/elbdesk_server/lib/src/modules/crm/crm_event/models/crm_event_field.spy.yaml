@@ -1,0 +1,27 @@
+# Event Field
+#
+# This enum defines the various fields that can be used with the Event Table
+# Each field name has to be the same name as the field in the CrmEventDTO class
+#
+# When adding a new property to the CrmEventDTO class a new value should also
+# be added to this enum to ensure that the frontend can display the new field
+#
+enum: CrmEventField
+serialized: byName
+
+values:
+  - id
+  - name
+  - description
+  - startDate
+  - endDate
+  - executionDate
+  - status
+
+  # Meta Fields
+  - createdAt
+  - createdBy
+  - lastModifiedAt
+  - lastModifiedBy
+  - deletedAt
+  - isDraft 

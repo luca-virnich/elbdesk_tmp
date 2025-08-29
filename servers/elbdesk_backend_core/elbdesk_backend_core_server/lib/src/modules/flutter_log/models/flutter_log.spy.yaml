@@ -1,0 +1,24 @@
+# Flutter Log
+#
+# This table manages Flutter client-side error logs capturing all FlutterErrorDetails properties
+class: FlutterLogDTO
+table: ed_core_admin_flutter_log
+
+fields:
+  # Log identification
+  deviceId: String?
+  userId: int?
+  
+  # FlutterErrorDetails properties
+  context: String?
+  exception: String
+  flutterLibrary: String?
+  stack: String?
+  silent: bool?
+  information: String?
+  
+  # Additional context
+  time: DateTime
+  platform: String?
+  appVersion: String?
+  buildNumber: String? 

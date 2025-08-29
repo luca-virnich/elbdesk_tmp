@@ -1,0 +1,23 @@
+class: SalesOrderItemDTO
+table: ed_sales_order_item
+fields:
+  # The parent sales order
+  salesOrder: SalesOrderDTO?, relation
+
+  deadline: DateTime?
+  
+  # Description of the sales order item
+  description: String
+  # Billable time of the sales order item
+  billableTime: int
+  customerId: int
+
+  # status of the sales order item as String (SalesOrderItemStatus)
+  status: String
+  # type of the sales order item as String (SalesOrderItemType)
+  type: String
+  # primary key of the soi (e.g prepare artwork soi)
+  soiTypePrimaryKey: int?
+  # assigned user for this sales order item
+  assignedUser: module:core:LightUserDTO?, relation(optional)
+
