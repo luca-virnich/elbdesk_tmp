@@ -1,0 +1,44 @@
+
+services:
+  serverpod:
+    image: ${REGISTRY}/${GHCR_ORG}/${RUN_MODE}-${SERVER_NAME}:latest
+    container_name: ${SERVER_NAME}-${RUN_MODE}
+    restart: always
+    networks: [ serverpod-network ]
+
+    command: ["--mode","${RUN_MODE}","--role","monolith","--logging","verbose","--apply-migrations"]
+
+    environment:
+      # Serverpod-Run-Settings
+      SERVERPOD_RUN_MODE: ${RUN_MODE}
+      SERVERPOD_SERVER_ID: default
+      SERVERPOD_SERVER_ROLE: monolith
+      SERVERPOD_LOGGING_MODE: normal
+
+      SERVERPOD_APPLY_MIGRATIONS: "true"
+
+      # Secrets/Passwörter (überschreiben passwords.yaml):
+      SERVERPOD_DATABASE_PASSWORD: ${DB_PASSWORD}       # für Managed Postgres
+      SERVERPOD_PASSWORD_serviceSecret: ${SERVICE_SECRET}
+      SERVERPOD_PASSWORD_mailerHost: ${MAILER_HOST}
+      SERVERPOD_PASSWORD_mailerProjectId: ${MAILER_PROJECT_ID}
+      SERVERPOD_PASSWORD_mailerApiToken: ${MAILER_API_TOKEN}
+      SERVERPOD_PASSWORD_AFSAccessKeyId: ${AFS_ACCESS_KEY_ID}
+      SERVERPOD_PASSWORD_AFSSecretKey: ${AFS_SECRET_KEY}
+      SERVERPOD_PASSWORD_cloudStorageHost: ${CLOUD_STORAGE_HOST}
+      SERVERPOD_PASSWORD_cloudStoragePublicHost: ${CLOUD_STORAGE_PUBLIC_HOST}
+      SERVERPOD_PASSWORD_cloudStorageScheme: ${CLOUD_STORAGE_SCHEME}
+      SERVERPOD_PASSWORD_cloudStoragePublicScheme: ${CLOUD_STORAGE_PUBLIC_SCHEME}
+
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${SERVER_NAME}-${RUN_MODE}.rule=Host(`${API_HOST}`)
+      - traefik.http.routers.${SERVER_NAME}-${RUN_MODE}.entrypoints=websecure
+      - traefik.http.routers.${SERVER_NAME}-${RUN_MODE}.tls.certresolver=myresolver
+      - traefik.http.services.${SERVER_NAME}-${RUN_MODE}.loadbalancer.server.port=8080
+
+networks:
+  serverpod-network:
+    external: true
+    name: serverpod-network      

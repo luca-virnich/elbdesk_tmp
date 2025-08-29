@@ -1,0 +1,44 @@
+name: Check if Flutter base image exists
+description: Check if Flutter base image exists, needs to be logged in to the registry first
+inputs:
+  registry:
+    description: "Registry for the deployment"
+    required: true
+  flutter_version:
+    description: "Flutter version"
+    required: true
+
+outputs:
+  flutter_image_exists:
+    description: "True if the Flutter image exists"
+    value: ${{ steps.verify_flutter_version.outputs.flutter_image_exists }}
+
+runs:
+  using: "composite"
+  steps:
+
+    ############################################################
+    # 1. Return only true if the base Flutter image exists
+    ############################################################
+    - name: Decide whether the base Flutter image already exists
+      id: verify_flutter_version
+      shell: bash
+      run: |
+        set -o pipefail
+        IMAGE="${{ inputs.registry }}/${{ github.repository_owner }}/flutter:${{ inputs.flutter_version }}"
+
+        if output="$(docker manifest inspect "$IMAGE" 2>&1)"; then
+          echo "flutter_image_exists=true" >>"$GITHUB_OUTPUT"
+          echo "::notice::Flutter image with version ${{ inputs.flutter_version }} exists!"
+        else
+          if echo "$output" | grep -qiE "unauthorized|denied"; then
+              echo "ERROR: Access to $IMAGE is not authorized. Token does not have the necessary permissions." >&2
+              exit 1
+          elif echo "$output" | grep -qi "manifest unknown"; then
+              echo "flutter_image_exists=false" >>"$GITHUB_OUTPUT"
+              echo "::notice::Flutter image with version ${{ inputs.flutter_version }} does not exist!"
+          else
+              echo "ERROR: Unexpected error during inspect: $output" >&2
+              exit 1
+          fi
+        fi

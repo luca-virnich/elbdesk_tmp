@@ -1,0 +1,103 @@
+name: Check Migrations
+
+on:
+  workflow_call:
+    inputs:
+      registry:              { required: true, type: string }
+      flutter_version:       { required: true, type: string }
+      app_version:           { required: true, type: string }
+      server_version:        { required: true, type: string }
+      server_path:           { required: true, type: string }
+      serverpod_version:     { required: true, type: string }
+      branch:                { required: true, type: string }
+
+jobs:
+  check-migrations:
+    runs-on: ubuntu-latest
+      
+    container:
+      image: ${{ inputs.registry }}/${{ github.repository_owner }}/flutter:${{ inputs.flutter_version }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{  secrets.GITHUB_TOKEN }}
+    
+    steps:
+      
+      ############################################################
+      # 1. Checkout Source
+      ############################################################
+      - name: Checkout Source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+
+      ############################################################
+      # 2. Get token from Github App for private repo access
+      ############################################################
+      - name: Get token from Github App for private repo access
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+            app-id: ${{ secrets.APP_ID }}
+            private-key: ${{ secrets.APP_PRIVATE_KEY }}
+            owner: App-Ahoi 
+
+
+      ############################################################
+      # 3. Set up Git credentials for private repo access
+      ############################################################
+      - name: Set up Git credentials
+        run: |
+          git config --global url."https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/".insteadOf "https://github.com/"
+
+
+      ############################################################
+      # 4. Test Force Migration
+      ############################################################
+      - name: Test Force Migration
+        id: test-force-migration
+        uses: ./.github/actions/test-force-migration
+        with:
+          server_path: ${{ inputs.server_path }}
+          serverpod_cli_version: ${{ inputs.serverpod_version }}
+
+
+      ############################################################
+      # 5. Wait for force-migration approval if --force is needed
+      ############################################################
+      - name: Wait for force-migration approval
+        if: steps.test-force-migration.outputs.needs_force == 'true'
+        id: wait_approval
+        uses: trstringer/manual-approval@v1
+        timeout-minutes: 60
+        with:
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: luca-virnich        
+          minimum-approvals: 1
+          issue-title: "Force migration approval for ${{ github.ref_name }} - App version ${{ inputs.app_version }} and Server version ${{ inputs.server_version }}"
+          issue-body-file-path: ${{ inputs.server_path }}/${{ steps.test-force-migration.outputs.log_path }}
+          exclude-workflow-initiator-as-approver: false
+          fail-on-denial: true
+
+
+      ############################################################
+      # 6. Create, Commit & Push force migrations if approved
+      ############################################################
+      - name: Create, Commit & Push force migrations
+        if: steps.test-force-migration.outputs.needs_force == 'true' && steps.wait_approval.outputs.approval-status == 'approved'
+        uses: ./.github/actions/create-commit-push-force-migration
+        with:
+          server_path: ${{ inputs.server_path }}
+          branch: ${{ inputs.branch }}
+
+
+      ############################################################
+      # 7. Commit & Push normal migrations if --force is not needed
+      ############################################################
+      - name: Commit & Push normal migrations
+        if: steps.test-force-migration.outputs.needs_force == 'false'
+        uses: ./.github/actions/commit-push-migrations
+        with:
+          server_path: ${{ inputs.server_path }}
+          branch: ${{ inputs.branch }}  

@@ -1,0 +1,50 @@
+name: Deploy Traefik
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-traefik:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_HOST: ssh://${{ secrets.ssh_user }}@${{ secrets.ssh_host }}
+      EMAIL: ${{ secrets.email }}
+    
+    steps:
+      ############################################################
+      # 1. Checkout code
+      ############################################################
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+
+      ############################################################
+      # 2. SSH key
+      # 2.1 create new empty file ~/.ssh/id_rsa
+      # 2.2 add ssh private key to ~/.ssh/id_rsa
+      # 2.3 add ssh host to ~/.ssh/known_hosts
+      ############################################################
+      - name: Add SSH key
+        run: |
+            install -m 600 -D /dev/null ~/.ssh/id_rsa 
+            echo "${{ secrets.ssh_private_key }}" > ~/.ssh/id_rsa
+            ssh-keyscan -H ${{ secrets.ssh_host }} >> ~/.ssh/known_hosts
+      
+
+      ############################################################    
+      # 3. Start (or update) Traefik proxy stack
+      ############################################################
+      - name: Start (or update) Traefik proxy stack
+        env:
+          EMAIL: ${{ secrets.email }}
+        run: |
+          docker compose -p proxy \
+            -f .github/.docker/docker-compose-traefik.yaml \
+            up -d \
+              --pull always \
+              --force-recreate \
+              --remove-orphans  
+          
+          

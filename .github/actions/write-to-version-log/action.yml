@@ -1,0 +1,91 @@
+name: "Write to Version Log"
+description: "Writes a new value to a YAML file and commits it. Every previous version changes will be removed."
+
+inputs:
+  path_to_file:    { required: true,  description: "Path to the test log file" }
+  new_value:       { required: true,  description: "New version to write to the file" }
+  key_to_update:   { required: true,  description: "Key to update" }
+  branch:          { required: true,  description: "Branch to push to" }
+
+runs:
+  using: "composite"
+  steps:
+    ############################################################
+    # 1. Checkout source
+    ############################################################
+    - name: Checkout source
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.branch }}
+
+    ############################################################
+    # 1. Mark repo as safe for git
+    ############################################################
+    - name: Mark repo as safe for git
+      shell: bash
+      env:
+        REPO_ROOT: ${{ github.workspace }}
+      run: |
+        git config --global --add safe.directory "$REPO_ROOT"
+
+
+    ############################################################
+    # 2. Write to file
+    ############################################################
+    - name: Overwrite key value in YAML
+      shell: bash
+      env:
+        FILE: ${{ inputs.path_to_file }}
+        KEY: ${{ inputs.key_to_update }}
+        VER: ${{ inputs.new_value }}
+      run: |
+        set -euo pipefail
+
+        TMP="${FILE}.tmp"
+
+        awk -v key="$KEY" -v ver="$VER" '
+          BEGIN {
+            # Escape special characters in the key
+            gsub(/[][(){}.^$*+?|\\]/, "\\\\&", key)
+            changed = 0
+          }
+          {
+            # Match: optional Indent + key + ":" + optional Spaces + rest of the line
+            if (match($0, "^[[:space:]]*" key "[[:space:]]*:[[:space:]]*")) {
+              indent = substr($0, 1, RSTART-1)
+              # Always write the value in quotes
+              printf "%s%s: \"%s\"\n", indent, key, ver
+              changed = 1
+            } else {
+              print
+            }
+          }
+          END {
+            # No error handling required because the file is already there
+          }
+        ' "$FILE" > "$TMP"
+
+        mv "$TMP" "$FILE"
+
+
+    ############################################################
+    # 3. Commit & push
+    ############################################################
+    - name: Commit & push
+      shell: bash
+      env:
+        FILE: ${{ inputs.path_to_file }}
+      run: |
+        set -euo pipefail
+    
+        git config user.name  "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+        git add "$FILE"
+        if git diff --staged --quiet; then
+          echo "No version log changes to commit."
+          exit 0
+        fi
+
+        git commit -m "chore(version-log): updated version log for ${{ inputs.key_to_update }} to ${{ inputs.new_value }} [skip ci]"
+        git push origin "HEAD:${{ inputs.branch }}"

@@ -1,0 +1,104 @@
+name: Deploy serverpod to VPS
+
+on:
+  workflow_call:
+    inputs:
+      registry:           { required: true, type: string }   # ghcr.io
+      server_name:        { required: true, type: string }   # short name, e.g. test_app
+      server_path:        { required: true, type: string }   # e.g. apps/test_app
+      server_new_version: { required: true, type: string }   # e.g. 1.2.3+4
+      server_version_key: { required: true, type: string }   # e.g. server_version
+      version_log_file:   { required: true, type: string }   # e.g. version_log.yaml
+      checkout_ref:       { required: true, type: string }   # git branch or tag to checkout
+      run_mode:           { required: true, type: string }   # test | staging | production
+      api_host:           { required: true, type: string }   # e.g. test.api.starter.elbdesk.cloud
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_HOST: ssh://${{ secrets.ssh_user }}@${{ secrets.ssh_host }}
+
+
+    steps:
+    ############################################################
+    # 1. Checkout source
+    ############################################################
+    - name: Checkout source
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.checkout_ref }}
+
+
+    ############################################################
+    # 2. SSH key - TODO: add ssh key to ssh-agent for more security
+    ############################################################
+    - name: Add SSH key
+      run: |
+        install -m 600 -D /dev/null ~/.ssh/id_rsa
+        echo "${{ secrets.ssh_private_key }}" > ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.ssh_host }} >> ~/.ssh/known_hosts
+        
+
+    ############################################################
+    # 3. Login to registry
+    ############################################################
+    - name: Login to registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.registry }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}    
+
+        
+    ############################################################
+    # 4. Deploy / restart Flutter app
+    ############################################################
+    - name: Pull & deploy serverpod stack
+      env:
+        REGISTRY:       ${{ inputs.registry }}
+        GHCR_ORG:       ${{ github.repository_owner }}
+        SERVER_NAME:    ${{ inputs.server_name }}      
+        DB_PASSWORD:    ${{ inputs.run_mode == 'test' && secrets.DB_PASSWORD_TEST || inputs.run_mode == 'staging' && secrets.DB_PASSWORD_STAGING || secrets.DB_PASSWORD_PRODUCTION }}
+        SERVICE_SECRET: ${{ inputs.run_mode == 'test' && secrets.SERVICE_SECRET_TEST || inputs.run_mode == 'staging' && secrets.SERVICE_SECRET_STAGING || secrets.SERVICE_SECRET_PRODUCTION }}
+        MAILER_HOST:    ${{ secrets.SERVERPOD_MAILER_HOST }}
+        MAILER_PROJECT_ID: ${{ inputs.run_mode == 'test' && secrets.SERVERPOD_MAILER_PROJECT_ID_TEST || inputs.run_mode == 'staging' && secrets.SERVERPOD_MAILER_PROJECT_ID_STAGING || secrets.SERVERPOD_MAILER_PROJECT_ID_PRODUCTION }}
+        MAILER_API_TOKEN: ${{ inputs.run_mode == 'test' && secrets.SERVERPOD_MAILER_API_TOKEN_TEST || inputs.run_mode == 'staging' && secrets.SERVERPOD_MAILER_API_TOKEN_STAGING || secrets.SERVERPOD_MAILER_API_TOKEN_PRODUCTION }}
+        RUN_MODE:       ${{ inputs.run_mode }}
+        API_HOST:       ${{ inputs.api_host }}
+        AFS_ACCESS_KEY_ID: ${{ secrets.SERVERPOD_AFS_ACCESS_KEY_ID }}
+        AFS_SECRET_KEY: ${{ secrets.SERVERPOD_AFS_SECRET_KEY }}
+        CLOUD_STORAGE_HOST: ${{ secrets.CLOUD_STORAGE_HOST }}
+        CLOUD_STORAGE_PUBLIC_HOST: ${{ secrets.CLOUD_STORAGE_PUBLIC_HOST }}
+        CLOUD_STORAGE_SCHEME: ${{ secrets.CLOUD_STORAGE_SCHEME }}
+        CLOUD_STORAGE_PUBLIC_SCHEME: ${{ secrets.CLOUD_STORAGE_PUBLIC_SCHEME }}
+
+      run: |
+        docker compose -p "${{ inputs.server_name }}-${{ inputs.run_mode }}" \
+        -f .github/.docker/docker-serverpod-compose.yaml \
+        pull
+
+        docker compose -p "${{ inputs.server_name }}-${{ inputs.run_mode }}" \
+          -f .github/.docker/docker-serverpod-compose.yaml \
+          up -d \
+            --force-recreate \
+            --remove-orphans
+
+
+    ############################################################
+    # 5. Write to version log
+    ############################################################
+    - name: Write to version log
+      uses: ./.github/actions/write-to-version-log
+      with:
+        path_to_file: ${{ inputs.version_log_file }}
+        key_to_update: ${{ inputs.server_version_key }}
+        new_value: ${{ inputs.server_new_version }}
+        branch: ${{ inputs.checkout_ref }}
+
+
+    ############################################################
+    # 6. Cleanup - remove ssh key from runner
+    ############################################################
+    - name: Cleanup - remove ssh key from runner
+      run: rm -rf ~/.ssh

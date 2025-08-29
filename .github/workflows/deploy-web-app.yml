@@ -1,0 +1,94 @@
+name: Deploy demo app to VPS
+
+on:
+  workflow_call:
+    inputs:
+      registry:         { required: true, type: string }   # ghcr.io
+      app_name:         { required: true, type: string }   # short name, e.g. test_app
+      app_path:         { required: true, type: string }   # e.g. apps/test_app
+      app_new_version:  { required: true, type: string }   # e.g. 1.2.3+4
+      app_version_key:  { required: true, type: string }   # e.g. app_web_version
+      version_log_file: { required: true, type: string }   # e.g. version_log.yaml
+      hostname:         { required: true, type: string }   # starter.elbdesk.cloud
+      checkout_ref:     { required: true, type: string }   # git branch or tag to checkout
+      run_mode:         { required: true, type: string }   # test | staging | production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_HOST: ssh://${{ secrets.ssh_user }}@${{ secrets.ssh_host }}
+     
+
+    steps:
+    ############################################################
+    # 1. Checkout source
+    ############################################################
+    - name: Checkout source
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.checkout_ref }}
+
+
+    ############################################################
+    # 2. SSH key - TODO: add ssh key to ssh-agent for more security
+    ############################################################
+    - name: Add SSH key
+      run: |
+        install -m 600 -D /dev/null ~/.ssh/id_rsa
+        echo "${{ secrets.ssh_private_key }}" > ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.ssh_host }} >> ~/.ssh/known_hosts
+        
+
+    ############################################################
+    # 3. Login to registry
+    ############################################################
+    - name: Login to registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.registry }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}    
+
+        
+    ############################################################
+    # 4. Deploy / restart Flutter app
+    ############################################################
+    - name: Pull & deploy web app stack
+      env:
+        REGISTRY:    ${{ inputs.registry }}
+        GHCR_ORG:    ${{ github.repository_owner }}
+        APP_NAME:    ${{ inputs.app_name }}      
+        RUN_MODE:    ${{ inputs.run_mode }}      
+        APP_HOST:    ${{ inputs.hostname }}          
+
+      run: |
+        docker compose -p "${{ inputs.app_name }}-${{ inputs.run_mode }}" \
+        -f .github/.docker/docker-compose-web-app.yaml \
+        pull
+
+        docker compose -p "${{ inputs.app_name }}-${{ inputs.run_mode }}" \
+          -f .github/.docker/docker-compose-web-app.yaml \
+          up -d \
+            --force-recreate \
+            --remove-orphans
+
+
+    ############################################################
+    # 5. Write to version log
+    ############################################################
+    - name: Write to version log
+      uses: ./.github/actions/write-to-version-log
+      with:
+        path_to_file: ${{ inputs.version_log_file }}
+        key_to_update: ${{ inputs.app_version_key }}
+        new_value: ${{ inputs.app_new_version }}
+        branch: ${{ inputs.checkout_ref }}
+
+
+    ############################################################
+    # 6. Cleanup - remove ssh key from runner
+    ############################################################
+    - name: Cleanup - remove ssh key from runner
+      run: rm -rf ~/.ssh
+    

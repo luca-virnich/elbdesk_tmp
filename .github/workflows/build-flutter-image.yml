@@ -1,0 +1,131 @@
+name: 🦋 Build and Push Flutter Multi-Arch Container Image
+
+on:
+  workflow_call:   
+    inputs:
+      flutter_version:        { required: true, type: string }
+      registry:               { required: true, type: string }
+      should_build_image:     { required: true, type: boolean }
+
+  workflow_dispatch:
+    inputs:
+      flutter_version:        { required: true, type: string, description: "Flutter version to build" }
+      registry:               { required: true, type: string, description: "Registry to push the image to" }
+      should_build_image:     { required: false, type: boolean, description: "Should build image?",  default: true }
+      pr_number:              { required: false, type: string,  description: "PR number - leave empty for normal build", default: "" }
+  
+
+run-name: Build and Push Flutter Multi-Arch Container Image for Version ${{ inputs.flutter_version }}
+
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+  
+# prevent multiple builds of the same Flutter version from running concurrently
+concurrency:
+  group: build-flutter-${{ inputs.flutter_version || github.event.inputs.flutter_version || github.run_id }}
+  cancel-in-progress: true  
+
+jobs:
+  build-flutter-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      ############################################################
+      # 1. Log input variables
+      ############################################################
+      - name: Should build image?
+        run: |
+          echo "Should build image? ${{ inputs.should_build_image }}"
+          echo "Flutter version: ${{ inputs.flutter_version }}"
+
+
+      ############################################################
+      # 2. Checkout source code
+      ############################################################
+      - name: Checkout source
+        if: ${{ inputs.should_build_image }}
+        uses: actions/checkout@v4
+
+
+      ############################################################
+      # 3. Check if Dockerfile exists
+      ############################################################
+      - name: Check if Dockerfile exists
+        if: ${{ inputs.should_build_image }}
+        run: |
+          echo "Checking for Dockerfile..."
+          if [ -f "./.github/.docker/flutter-create-environment.Dockerfile" ]; then
+            echo "✓ Dockerfile found"
+          else
+            echo "✗ Dockerfile not found at ./.github/.docker/flutter-create-environment.Dockerfile"
+            exit 1
+          fi
+
+
+      ############################################################
+      # 4. Set up QEMU and Docker Buildx
+      ############################################################
+      - name: Set up QEMU
+        if: ${{ inputs.should_build_image }}
+        uses: docker/setup-qemu-action@v3
+
+
+      ############################################################
+      # 5. Set up Docker Buildx
+      ############################################################
+      - name: Set up Docker Buildx
+        if: ${{ inputs.should_build_image }}
+        uses: docker/setup-buildx-action@v3
+
+
+      ############################################################
+      # 6. Log in to GitHub Container Registry
+      ############################################################
+      - name: Log in to GitHub Container Registry
+        if: ${{ inputs.should_build_image }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+
+      ############################################################
+      # 7. Comment back on PR if PR number is provided
+      ############################################################
+      - name: Comment back on PR (build started)
+        if: ${{ inputs.pr_number != '' }}
+        uses: actions/github-script@v7
+        continue-on-error: true
+        env:
+            RUN_URL:   ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            const pr = Number(${{ inputs.pr_number }});
+            console.log("PR number: " + pr);
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: pr,
+              body: '▶️\n\nStarted building Flutter image for ${{ inputs.flutter_version }} in a separate workflow.\n\nRun: ' + process.env.RUN_URL
+            });
+
+
+      ############################################################
+      # 8. Build and push Docker image
+      ############################################################
+      - name: Build and push Docker image
+        if: ${{ inputs.should_build_image }}
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./.github/.docker/flutter-create-environment.Dockerfile
+          push: true
+          tags: ${{ inputs.registry }}/${{ github.repository_owner }}/flutter:${{ inputs.flutter_version }}
+          platforms: linux/arm64, linux/amd64
+          provenance: false
+          sbom: false 
+          build-args: |
+            FLUTTER_VERSION=${{ inputs.flutter_version }}

@@ -1,0 +1,87 @@
+name: Build & push Serverpod server
+
+on:
+  workflow_call:
+    inputs:
+      branch:                   { required: true, type: string }
+      registry:                 { required: true, type: string }
+      server_name:              { required: true, type: string }
+      server_path:              { required: true, type: string }
+      server_version_full:      { required: true, type: string }
+      server_version_major:     { required: true, type: string }
+      server_version_minor:     { required: true, type: string }
+      server_version_patch:     { required: true, type: string }
+      server_version_build:     { required: true, type: string }
+      dart_version:             { required: true, type: string }
+      run_mode:                 { required: true, type: string }
+
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    permissions: { contents: read, packages: write }
+
+    steps:
+      ############################################################
+      # 1. Checkout source code
+      ############################################################
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+
+      ############################################################
+      # 2. Login to container registry
+      ############################################################
+      - name: Log in to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+
+      ############################################################
+      # 3. Get token from Github App for private repo access
+      ############################################################
+      - name: Get token from Github App for private repo access
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: App-Ahoi     
+
+
+      ############################################################
+      # 5. Set up Docker Buildx
+      ############################################################
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+
+      ############################################################
+      # 6. Build & push
+      ############################################################
+      - name: Build & push server image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .github/.docker/serverpod.Dockerfile
+          push: true
+          tags: |
+            ${{ inputs.registry }}/${{ github.repository_owner }}/${{ inputs.run_mode }}-${{ inputs.server_name }}:latest
+            ${{ inputs.registry }}/${{ github.repository_owner }}/${{ inputs.run_mode }}-${{ inputs.server_name }}:${{ inputs.server_version_major }}.${{ inputs.server_version_minor }}.${{ inputs.server_version_patch }}.${{ inputs.server_version_build }}
+          build-args: |
+            SERVER_PATH=${{ inputs.server_path }}
+            DART_VERSION=${{ inputs.dart_version }}
+          secrets: |
+            GITHUB_TOKEN=${{ steps.app-token.outputs.token }}
+          labels: |
+            org.opencontainers.image.title=${{ inputs.run_mode }}-${{ inputs.server_name }}
+            org.opencontainers.image.description=This is a the serverpod image for the ${{ inputs.run_mode }} environment in version ${{ inputs.server_version_full }}.
+            org.opencontainers.image.version=${{ inputs.server_version_full }}
+          platforms: linux/arm64
+          provenance: false
+          sbom: false 

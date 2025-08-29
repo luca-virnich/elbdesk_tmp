@@ -1,0 +1,72 @@
+name: "Test Force Migration"
+description: "Outputs needs_force=true if a force migration is needed. Path to the log file is also outputted. If no force migration is needed, it will create a normal migration."
+
+inputs:
+  server_path:
+    description: "Path to the server"
+    required: true
+  serverpod_cli_version:
+    description: "Serverpod CLI version"
+    required: true
+
+outputs:
+  needs_force:
+    description: "Whether the migration needs --force (true or false)"
+    value: ${{ steps.try_mig.outputs.needs_force }}
+  log_path:
+    description: "Path to the log file - relative to the server path"
+    value: ${{ steps.try_mig.outputs.log_path }}
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Dart pub get (server)
+      shell: bash
+      working-directory: ${{ inputs.server_path }}
+      run: dart pub get  
+
+    - name: Install Serverpod CLI
+      shell: bash
+      run: | 
+        dart pub global activate serverpod_cli ${{ inputs.serverpod_cli_version }}
+        echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+
+    - name: Try create-migration (no force)
+      id: try_mig
+      shell: bash
+      working-directory: ${{ inputs.server_path }}
+      run: |
+        set -Eeuo pipefail
+        LOG=_mig_try.log
+        echo "log_path=$LOG" >> "$GITHUB_OUTPUT"
+
+        set +e
+        serverpod create-migration >"$LOG" 2>&1
+        EXIT=$?
+        set -e
+
+        if [ $EXIT -eq 0 ]; then
+          echo "needs_force=false" >> "$GITHUB_OUTPUT"
+          echo "::notice::Normal migration (without --force) created."
+          exit 0
+        fi
+
+        if grep -qiE 'No changes detected|No changes found' "$LOG"; then
+          echo "needs_force=false" >> "$GITHUB_OUTPUT"
+          echo "::notice::No changes detected - no migration needed."
+          exit 0
+        fi
+
+        if grep -qiE 'Migration aborted.*Use --force|Use --force to ignore warnings|cannot be added in a table migration|will be deleted and recreated|destructive' "$LOG"; then
+          echo "needs_force=true" >> "$GITHUB_OUTPUT"
+          echo "::notice::Force migration needed."
+          echo "::group::create-migration output"
+          sed -n '1,200p' "$LOG" || true
+          echo "::endgroup::"
+          exit 0
+        fi
+
+        echo "::error::Migration failed (no Force-Indicator found). Log output:"
+        sed -n '1,200p' "$LOG" || true
+        exit 1

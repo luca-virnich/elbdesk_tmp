@@ -1,251 +1,160 @@
 name: Build Windows MSIX
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version for the build (semver format: X.Y.Z[+build])'
-        required: true
-        default: '1.0.0'
-        type: string
-      commit_ref:
-        description: 'Commit SHA or ref to build from (leave empty for latest)'
-        required: false
-        type: string
   workflow_call:
     inputs:
-      version:
-        description: 'Version for the build (semver format: X.Y.Z[+build])'
-        required: true
-        type: string
-      commit_ref:
-        description: 'Commit SHA or ref to build from (leave empty for latest)'
-        required: false
-        type: string
-      OWNER:
-        description: 'Owner of the repository'
-        required: true
-        type: string
-        default: ${{ github.repository_owner }}
-    secrets:
-      APP_ID:
-        required: true
-      APP_PRIVATE_KEY:
-        required: true
-      PFX_BASE64:
-        required: true
-      PFX_PASSWORD:
-        required: true
-      PACKAGES_SERVICE_AUTH:
-        required: true
-
-permissions:
-  contents: write
-  packages: write
+      app_path:               { required: true, type: string }
+      flutter_version:        { required: true, type: string }
+      app_version_full:       { required: true, type: string }
+      app_version_major:      { required: true, type: string }
+      app_version_minor:      { required: true, type: string }
+      app_version_patch:      { required: true, type: string }
+      app_version_build:      { required: true, type: string }
+      app_display_name:       { required: true, type: string }
+      publisher_display_name: { required: true, type: string }
+      app_name:               { required: true, type: string }
+      app_identifier:         { required: true, type: string }
+      msix_app_version_key:   { required: true, type: string }
+      version_log_file:       { required: true, type: string }
+      branch:                 { required: true, type: string }
+      run_mode:               { required: true, type: string }
 
 jobs:
-  build-windows:
+  build-msix:
     runs-on: windows-latest
-    permissions:
-      contents: write
-      packages: write
+    
     steps:
-      - name: Set run mode based on branch
-        id: set_mode
-        run: |
-          $branch = "${{ github.ref_name }}"
-          $runMode = switch ($branch) {
-            "dev"     { "development" }
-            "test"    { "test" }
-            "staging" { "staging" }
-            "production"    { "production" }
-            default   { "development" }  # Default fallback
-          }
-          echo "Running in $runMode mode for branch $branch"
-          echo "run_mode=$runMode" >> $env:GITHUB_OUTPUT
-
-      - name: List OWNER
-        run: |
-          Write-Host "OWNER: ${{ inputs.OWNER }}"
-          Write-Host "github.repository_owner: ${{ github.repository_owner }}"
-
-      - name: Get token from Github App
-        uses: actions/create-github-app-token@v1
-        id: app_token
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-          # owner is required, otherwise the creds will fail the checkout step
-          owner: ${{ inputs.OWNER || github.repository_owner }}
-
-      - name: Checkout repository
+      ############################################################
+      # 1. Checkout source
+      ############################################################
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ steps.app_token.outputs.token }}
-          fetch-depth: 0
-          # Use specified commit ref if provided, otherwise use the branch
-          ref: ${{ inputs.commit_ref || github.ref }}
+          ref: ${{ inputs.branch }}
 
-      - name: Install Flutter
+
+      ############################################################
+      # 2. Set up Flutter
+      ############################################################
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-            channel: stable
-            flutter-version: 3.32.5
+          flutter-version: ${{ inputs.flutter_version }}
+          channel: stable
 
-      - name: Create PFX Certificate
-        working-directory: apps/elbdesk_app
+
+      ############################################################
+      # 3. Enable Windows desktop
+      ############################################################
+      - name: Enable Windows desktop
+        shell: pwsh
+        run: flutter config --enable-windows-desktop
+ 
+
+      ############################################################
+      # 4. Decode signing certificate (PFX)
+      ############################################################
+      - name: Decode signing certificate (PFX)
+        shell: pwsh
+        working-directory: ${{ inputs.app_path }}
         run: |
-          echo "Creating PFX certificate from base64..."
-          New-Item -ItemType Directory -Force -Path ".certificates"
-          $pfxPath = "./windows/certificates/AppAhoiGmbH.pfx"
-          $bytes = [Convert]::FromBase64String('${{ secrets.PFX_BASE64 }}')
-          [IO.File]::WriteAllBytes($pfxPath, $bytes)
-          echo "PFX certificate created at: $pfxPath"
-
-      - name: Configure Git for private repos
-        run: |
-          git config --global credential.helper store
-          Add-Content -Path "$HOME\.git-credentials" -Value "https://x-access-token:${{ steps.app_token.outputs.token }}@github.com`n"
-          git config --global url."https://x-access-token:${{ steps.app_token.outputs.token }}@github.com/".insteadOf "https://github.com/"
-
-      - name: Build MSIX Package
-        id: build
-        working-directory: apps/elbdesk_app
-        run: |
-          ./windows.ps1 --certificate-password="${{ secrets.PFX_PASSWORD }}" --${{ steps.set_mode.outputs.run_mode }} --version="${{ inputs.version }}"
-          echo "semver=$env:SEMVER_VERSION" >> $env:GITHUB_OUTPUT
-          echo "windows_version=$env:WINDOWS_VERSION" >> $env:GITHUB_OUTPUT
-          echo "tag_name=$env:TAG_NAME" >> $env:GITHUB_OUTPUT
-          echo "major=$env:MAJOR" >> $env:GITHUB_OUTPUT
-          echo "minor=$env:MINOR" >> $env:GITHUB_OUTPUT
-          echo "patch=$env:PATCH" >> $env:GITHUB_OUTPUT
-          echo "buildmeta=$env:BUILD_META" >> $env:GITHUB_OUTPUT
-          $msixPath = Get-ChildItem -Path "build\windows\x64\runner\Release\*.msix" | Select-Object -First 1
-          $msixName = Split-Path -Leaf $msixPath
-          echo "msix_path=$msixPath" >> $env:GITHUB_OUTPUT
-          echo "msix_name=$msixName" >> $env:GITHUB_OUTPUT
-        #   dart ../../.scripts/build_scripts/build_windows_local.dart `
-        #     --run-mode=${{ steps.set_mode.outputs.run_mode }} `
-        #     --msix-version=${{ steps.set_versions.outputs.windows_version }} `
-        #     --app-version=${{ steps.set_versions.outputs.semver }}
-
-      - name: Upload MSIX
-        working-directory: apps/elbdesk_app
-        run: |
-          $msixPath = Get-ChildItem -Path "build\windows\x64\runner\Release\*.msix" | Select-Object -First 1
-          $msixName = Split-Path -Leaf $msixPath
-          Write-Host "MSIX file path: $msixPath"
-          Write-Host "Uploading MSIX file to Packages Service..."
-
-          curl.exe -X PUT `
-            -u "${{ secrets.PACKAGES_SERVICE_AUTH }}" `
-            -T "$msixPath" `
-            "https://packages.coe.elbdesk.cloud/windows/${{ steps.set_mode.outputs.run_mode }}/${{ steps.build.outputs.semver }}/${msixName}"
-
-      - name: Create and upload version manifest
-        working-directory: apps/elbdesk_app
-        run: |
-          $commitSha = "${{ inputs.commit_ref }}"
-            if (-not $commitSha) {
-                $commitSha = git rev-parse HEAD
-            }
-                
-          $latestJson = @{
-            version = "${{ steps.build.outputs.semver }}"
-            major = ${{ steps.build.outputs.major }}
-            minor = ${{ steps.build.outputs.minor }}
-            patch = ${{ steps.build.outputs.patch }}
-            buildmeta = "${{ steps.build.outputs.buildmeta }}"
-            windowsVersion = "${{ steps.build.outputs.windows_version }}"
-            url = "https://packages.coe.elbdesk.cloud/windows/${{ steps.set_mode.outputs.run_mode }}/${{ steps.build.outputs.semver }}/ElbDesk_Setup_${{ steps.build.outputs.semver }}.msix"
-            releaseDate = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
-            runMode = "${{ steps.set_mode.outputs.run_mode }}"
-            commit = $commitSha
-          } | ConvertTo-Json
+          New-Item -ItemType Directory -Force -Path "windows/certificates" | Out-Null
+          $pfxPath = "windows/certificates/codesign.pfx"
+          [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String('${{ secrets.PFX_BASE64 }}'))
           
-          $latestJson | Out-File -Encoding UTF8 latest.json
-          Write-Host "Created version manifest:"
-          Write-Host $latestJson
-          
-          curl.exe -X PUT `
-            -u "${{ secrets.PACKAGES_SERVICE_AUTH }}" `
-            -H "Content-Type: application/json" `
-            -T "latest.json" `
-            "https://packages.coe.elbdesk.cloud/windows/${{ steps.set_mode.outputs.run_mode }}/latest.json"
 
-    #   - name: Upload Artifacts
-    #     uses: actions/upload-artifact@v3
-    #     with:
-    #       name: windows-msix
-    #       path: |
-    #         build/windows/x64/runner/Release/*.msix
-    #         latest.json
+      ############################################################
+      # 5. Get token from Github App for private repo access
+      ############################################################
+      - name: Get token from Github App for private repo access
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+            app-id: ${{ secrets.APP_ID }}
+            private-key: ${{ secrets.APP_PRIVATE_KEY }}
+            owner: App-Ahoi     
 
-      - name: Create GitHub Release
-        id: create_release
-        working-directory: apps/elbdesk_app
+
+      ############################################################
+      # 6. Set up Git credentials for private repo access
+      ############################################################
+      - name: Set up Git credentials 
+        run: |
+          git config --global url."https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/".insteadOf "https://github.com/"
+      
+      
+      ############################################################
+      # 7. Verify PFX password (fail fast + print cert info)
+      ############################################################
+      - name: Verify PFX password
+        shell: pwsh
+        working-directory: ${{ inputs.app_path }}
         env:
-          GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
+          PFX_PASS: ${{ secrets.PFX_PASSWORD }}
         run: |
-          # Configure Git identity
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
+          $pfxPath = "windows/certificates/codesign.pfx"
 
-          $commitSha = "${{ inputs.commit_ref }}"
-          if (-not $commitSha) {
-              $commitSha = git rev-parse HEAD
-          }
-          
-          $branchName = "${{ github.ref_name }}"
-          $runMode = "${{ steps.set_mode.outputs.run_mode }}"
-          $fullSemver = "${{ steps.build.outputs.semver }}"
-          $tagName = "${{ steps.build.outputs.tag_name }}"
-          
-          # Get MSIX file path and create new name
-          $msixPath = Get-ChildItem -Path "build\windows\x64\runner\Release\*.msix" | Select-Object -First 1
-          $msixName = Split-Path -Leaf $msixPath
-          
-          # Create release notes with commit info
-          $releaseNotes = @"
-          # Release $fullSemver
-          
-          Branch: $branchName
-          Commit: $commitSha
-          Mode: $runMode
-          Windows Version: ${{ steps.build.outputs.windows_version }}
-          
-          [Download MSIX](https://packages.coe.elbdesk.cloud/windows/$runMode/${fullSemver}/${msixName})
-          "@
-          
-          # Create a tag
-          git tag -a $tagName $commitSha -m "Release $fullSemver"
-          git push origin $tagName
-          
-          # Create GitHub Release with asset
-          gh release create $tagName `
-            --title "Release $fullSemver" `
-            --notes "$releaseNotes" `
-            --target $commitSha `
-            --draft=false `
-            --prerelease=$($runMode -ne "production")
+          # Mask the password defensively (secrets are masked by default, this adds belt & suspenders)
+          echo "::add-mask::$env:PFX_PASS"
 
-          # Upload with quotes to preserve space
-          gh release upload $tagName "$msixPath" --clobber
+          # Convert to SecureString and try to open the PFX
+          $sec = ConvertTo-SecureString -String $env:PFX_PASS -AsPlainText -Force
+          try {
+            $pfx  = Get-PfxData -FilePath $pfxPath -Password $sec
+            $cert = $pfx.EndEntityCertificates[0]
+
+            Write-Host "PFX password OK."
+            Write-Host "Subject   : $($cert.Subject)"
+            Write-Host "Thumbprint: $($cert.Thumbprint)"
+            Write-Host "Valid     : $($cert.NotBefore) .. $($cert.NotAfter)"
+          }
+          catch {
+            Write-Error "PFX password check failed: $($_.Exception.Message)"
+            exit 1
+          }
+
           
-          Write-Host "Created release $tagName from commit $commitSha with asset ${msixName}"
-    
-      - name: Cleanup Certificate
-        if: always()
+      ############################################################
+      # 7. Build MSIX
+      ############################################################
+      - name: Build MSIX
+        shell: pwsh
+        working-directory: ${{ inputs.app_path }}
         run: |
-          if (Test-Path ".certificates") {
-            Remove-Item -Path ".certificates" -Recurse -Force
-            echo "Cleaned up .certificates directory"
-          }
-      - name: Cleanup MSIX config where password is set
-        working-directory: apps/elbdesk_app
-        if: always()
-        run: |
-          if (Test-Path "pubspec.yaml") {
-            Remove-Item -Path "pubspec.yaml" -Force
-            echo "Cleaned up pubspec.yaml"
-          }
+          flutter pub get
+          dart run msix:create `
+          --install-certificate false `
+          --certificate-path "windows/certificates/codesign.pfx" `
+          --certificate-password "${{ secrets.PFX_PASSWORD }}" `
+          --output-path "build/windows/msix" `
+          --windows-build-args "--dart-define=APP_VERSION=${{ inputs.app_version_full }} --dart-define=RUN_MODE=${{ inputs.run_mode }}" `
+          --logo-path "windows/runner/resources/app_icon_${{ inputs.run_mode }}_512.png" `
+          --output-name "${{ inputs.run_mode }}-${{ inputs.app_name }}-${{ inputs.app_version_full }}" `
+          --display-name "${{ inputs.app_display_name }}" `
+          --publisher-display-name "${{ inputs.publisher_display_name }}" `
+          --identity-name "${{ inputs.app_identifier }}" `
+          --version "${{ inputs.app_version_major }}.${{ inputs.app_version_minor }}.${{ inputs.app_version_patch }}.${{ inputs.app_version_build }}"
+
+
+      ############################################################
+      # 8. Upload MSIX artifacts
+      ############################################################
+      - name: Upload MSIX artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.run_mode }}-${{ inputs.app_name }}-${{ inputs.app_version_full }}
+          path: |
+            ${{ inputs.app_path }}\build\windows\msix\*.msix
+          if-no-files-found: warn
+
+
+      ############################################################
+      # 9. Write to version log
+      ############################################################
+      - name: Write to version log
+        uses: ./.github/actions/write-to-version-log
+        with:
+          path_to_file: ${{ inputs.version_log_file }}
+          key_to_update: ${{ inputs.msix_app_version_key }}
+          new_value: ${{ inputs.app_version_full }}
+          branch: ${{ inputs.branch }}

@@ -1,0 +1,99 @@
+name: Build & push app
+
+on:
+  workflow_call:
+    inputs:
+      registry:          { description: "Registry hostname, e.g. ghcr.io",         required: true,  type: string }
+      app_name:          { description: "Image path without tag, e.g. demo_app",   required: true,  type: string }
+      flutter_version:   { description: "Flutter SDK version",                     required: true,  type: string }
+      app_path:          { description: "Path to the Flutter project",             required: true,  type: string }
+      branch:            { description: "Git branch or tag to checkout",           required: true,  type: string }
+      app_version_full:  { description: "App version, e.g. 1.0.0+1",               required: true,  type: string }
+      app_version_major: { description: "App version major",                       required: true,  type: string }
+      app_version_minor: { description: "App version minor",                       required: true,  type: string }
+      app_version_patch: { description: "App version patch",                       required: true,  type: string }
+      app_version_build: { description: "App version build",                       required: true,  type: string }
+      run_mode:          { description: "Run mode",                                required: true,  type: string }
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    permissions: { contents: read, packages: write }
+
+    steps:
+      ############################################################
+      # 1. Checkout source code
+      ############################################################
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+    
+          
+      ############################################################
+      # 2. Log in to GHCR
+      ############################################################
+      - name: Log in to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{  secrets.GITHUB_TOKEN }}
+
+
+      ############################################################
+      # 3. Get token from Github App for private repo access
+      ############################################################
+      - name: Get token from Github App
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: App-Ahoi
+
+
+      ############################################################
+      # 4. Set up QEMU
+      ############################################################
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3 
+        with:
+          platforms: arm64
+
+
+      ############################################################
+      # 5. Set up Docker Buildx
+      ############################################################
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+        
+      ############################################################
+      # 6. Build & push the demo-app image
+      ############################################################
+      - name: Build & push demo-app image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .github/.docker/web-app.Dockerfile
+          push: true
+          tags: |
+            ${{ inputs.registry }}/${{ github.repository_owner }}/${{ inputs.run_mode }}-${{ inputs.app_name }}:latest
+            ${{ inputs.registry }}/${{ github.repository_owner }}/${{ inputs.run_mode }}-${{ inputs.app_name }}:${{ inputs.app_version_major }}.${{ inputs.app_version_minor }}.${{ inputs.app_version_patch }}.${{ inputs.app_version_build }}
+          build-args: |
+            REGISTRY=${{ inputs.registry }}
+            GHCR_ORG=${{ github.repository_owner }}
+            FLUTTER_VERSION=${{ inputs.flutter_version }}
+            APP_VERSION=${{ inputs.app_version_full }}
+            APP_PATH=${{ inputs.app_path }}
+            RUN_MODE=${{ inputs.run_mode }}
+          secrets: |
+            GITHUB_TOKEN=${{ steps.app-token.outputs.token }}
+          labels: |
+            org.opencontainers.image.title=${{ inputs.run_mode }}-${{ inputs.app_name }}
+            org.opencontainers.image.description=This is a the web app image for the ${{ inputs.run_mode }} environment in version ${{ inputs.app_version_full }}.
+            org.opencontainers.image.version=${{ inputs.app_version_full }}
+          platforms: linux/arm64
+          provenance: false
+          sbom: false 

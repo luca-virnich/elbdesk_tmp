@@ -1,0 +1,309 @@
+name: 🚀 Build & deploy everything
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_version:        { required: false, type: string,  description: "App Version in format 1.2.3+4." }
+      server_version:     { required: false, type: string,  description: "Server Version in format 1.2.3+4." }
+      build_serverpod:    { required: true,  type: boolean, description: "Build And Deploy Serverpod", default: true }
+      build_flutter_app:  { required: true,  type: boolean, description: "Build And Deploy Flutter Web App", default: true }
+      build_windows_msix: { required: true,  type: boolean, description: "Build And Deploy Windows MSIX", default: true }
+      
+
+run-name: >-
+  ${{ github.ref_name }} -
+  ${{ ((inputs.build_flutter_app == true) || (inputs.build_windows_msix == true))
+        && format('App@{0} ', inputs.app_version) || '' }}
+  ${{ (inputs.build_serverpod == true)
+        && format('Server@{0}', inputs.server_version) || '' }}
+
+# when copying this workflow, define variables here
+# these variables shouldnt directly used in the workflow,
+# but only via the set-variables action because they will be formatted
+env:
+  app_path: apps/elbdesk_app
+  server_path: servers/elbdesk_server
+  app_display_name: ElbDesk - QuantiFire Demo         # this is the display name of the app, run mode will be added to the display name except for production
+  publisher_display_name: App Ahoi GmbH    # this is the display name of the publisher, used for the msix for example, may be used for ios and android in the future
+  app_name: elbdesk_app_quantifire_demo                    # this has to be a string without spaces, used for docker tags and file names
+  server_name: elbdesk_server_quantifire_demo              # this has to be a string without spaces, used for docker tags and file names, also unique to other projects
+  app_identifier: com.elbdesk.appahoi    # the run mode will be added to the identifier, e.g. com.elbdesk.appahoi.staging, prod will stay like this
+  branch: ${{ github.ref_name }}
+  domain: elbdesk.cloud                    # the final url hostname will be computed from this
+  subdomain: quantifire-demo               # the final url hostname will be computed from this
+  registry: ghcr.io
+  version_log_test_path: version_log_test.yaml
+  version_log_staging_path: version_log_staging.yaml
+  version_log_prod_path: version_log_production.yaml
+  web_app_version_key: app_web_version                 # this is the key in the version log file whiches value will be updated with the new web app version
+  msix_app_version_key: app_msix_version               # this is the key in the version log file whiches value will be updated with the new msix version
+  server_version_key: server_version                   # this is the key in the version log file whiches value will be updated with the new server version
+
+
+permissions:
+  contents: read
+  packages: write
+
+
+jobs:
+  context-setup:
+    name: Context Setup
+    runs-on: ubuntu-latest
+    outputs:
+      app_path: ${{ steps.set-variables.outputs.app_path }}
+      server_path: ${{ steps.set-variables.outputs.server_path }}
+      app_display_name: ${{ steps.set-variables.outputs.app_display_name }}
+      publisher_display_name: ${{ steps.set-variables.outputs.publisher_display_name }}
+      app_name: ${{ steps.set-variables.outputs.app_name }}
+      server_name: ${{ steps.set-variables.outputs.server_name }}
+      app_identifier: ${{ steps.set-variables.outputs.app_identifier }}
+      hostname: ${{ steps.set-variables.outputs.hostname }}  # this is the final url for the web app
+      api_host: ${{ steps.set-variables.outputs.api_host }}  # this is the api url, it needs to match the one from serverpod config files
+      run_mode: ${{ steps.set-variables.outputs.run_mode }}  
+      flutter_version: ${{ steps.set-variables.outputs.flutter_version }}
+      server_dart_version: ${{ steps.set-variables.outputs.server_dart_version }}
+      serverpod_version: ${{ steps.set-variables.outputs.serverpod_version }}
+      branch: ${{ steps.set-variables.outputs.branch }}
+      app_version_full: ${{ steps.set-variables.outputs.app_version_full }}
+      app_version_major: ${{ steps.set-variables.outputs.app_version_major }}
+      app_version_minor: ${{ steps.set-variables.outputs.app_version_minor }}
+      app_version_patch: ${{ steps.set-variables.outputs.app_version_patch }}
+      app_version_build: ${{ steps.set-variables.outputs.app_version_build }}
+      server_version_full: ${{ steps.set-variables.outputs.server_version_full }}
+      server_version_major: ${{ steps.set-variables.outputs.server_version_major }}
+      server_version_minor: ${{ steps.set-variables.outputs.server_version_minor }}
+      server_version_patch: ${{ steps.set-variables.outputs.server_version_patch }}
+      server_version_build: ${{ steps.set-variables.outputs.server_version_build }}
+      registry: ${{ steps.set-variables.outputs.registry }}
+      flutter_image_exists: ${{ steps.verify-flutter-version.outputs.flutter_image_exists }}
+      version_log_file_path: ${{ steps.set-variables.outputs.version_log_file_path }}
+      web_app_version_key: ${{ steps.set-variables.outputs.web_app_version_key }}
+      msix_app_version_key: ${{ steps.set-variables.outputs.msix_app_version_key }}
+      server_version_key: ${{ steps.set-variables.outputs.server_version_key }}
+    
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.branch }}
+        
+      - name: Get and set Variables
+        id: set-variables
+        uses: ./.github/actions/set-variables
+        with:
+          app_path: ${{ env.app_path }}
+          server_path: ${{ env.server_path }}
+          app_display_name: ${{ env.app_display_name }}
+          publisher_display_name: ${{ env.publisher_display_name }}
+          app_name: ${{ env.app_name }}
+          server_name: ${{ env.server_name }}
+          app_identifier: ${{ env.app_identifier }}
+          subdomain: ${{ env.subdomain }}
+          domain: ${{ env.domain }}
+          branch: ${{ env.branch }}
+          app_version: ${{ inputs.app_version }}
+          server_version: ${{ inputs.server_version }}
+          registry: ${{ env.registry }}
+          build_serverpod: ${{ inputs.build_serverpod }}
+          build_flutter_app: ${{ inputs.build_flutter_app }}
+          build_windows_msix: ${{ inputs.build_windows_msix }}
+          version_log_test_path: ${{ env.version_log_test_path }}
+          version_log_staging_path: ${{ env.version_log_staging_path }}
+          version_log_prod_path: ${{ env.version_log_prod_path }}
+          web_app_version_key: ${{ env.web_app_version_key }}
+          msix_app_version_key: ${{ env.msix_app_version_key }}
+          server_version_key: ${{ env.server_version_key }}
+
+      - name: Log in to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ steps.set-variables.outputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify if Flutter Image exists
+        id: verify-flutter-version
+        uses: ./.github/actions/verify-flutter-version
+        with:
+          registry: ${{ steps.set-variables.outputs.registry }}
+          flutter_version: ${{ steps.set-variables.outputs.flutter_version }}
+          
+
+  ############################################################
+  # 1. Build Flutter Image if not exists
+  ############################################################
+  build-flutter-image:
+    name: Build Flutter Image if not exists
+    needs: [context-setup]
+    uses: ./.github/workflows/build-flutter-image.yml
+    permissions:
+      contents: read
+      packages: write
+      pull-requests: write
+    with:
+      registry:           ${{ needs.context-setup.outputs.registry }}
+      flutter_version:    ${{ needs.context-setup.outputs.flutter_version }}
+      should_build_image: ${{ needs.context-setup.outputs.flutter_image_exists == 'false' }}
+
+
+  ############################################################
+  # 2. Commit push normal migrations or wait for approval for force migrations
+  ############################################################
+  test-force-migration:
+    name: Check Migrations
+    needs: [context-setup, build-flutter-image]
+    if: inputs.build_serverpod == true
+    uses: ./.github/workflows/check-migrations.yml
+    permissions:
+      contents: write
+      packages: read
+      issues: write
+    with:
+      registry:          ${{ needs.context-setup.outputs.registry }}
+      flutter_version:   ${{ needs.context-setup.outputs.flutter_version }}
+      app_version:       ${{ needs.context-setup.outputs.app_version_full }}
+      server_version:    ${{ needs.context-setup.outputs.server_version_full }}
+      server_path:       ${{ needs.context-setup.outputs.server_path }}
+      serverpod_version: ${{ needs.context-setup.outputs.serverpod_version }}
+      branch:            ${{ needs.context-setup.outputs.branch }}
+    secrets: inherit
+
+
+  ############################################################
+  # 4. Serverpod Build
+  ############################################################
+  build-serverpod:
+    name: Build Serverpod
+    needs: [context-setup, test-force-migration]
+    if: inputs.build_serverpod == true
+    uses: ./.github/workflows/build-serverpod.yml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      branch:               ${{ needs.context-setup.outputs.branch }}
+      registry:             ${{ needs.context-setup.outputs.registry }}
+      server_name:          ${{ needs.context-setup.outputs.server_name }}
+      server_path:          ${{ needs.context-setup.outputs.server_path }}
+      server_version_full:  ${{ needs.context-setup.outputs.server_version_full }}
+      server_version_major: ${{ needs.context-setup.outputs.server_version_major }}
+      server_version_minor: ${{ needs.context-setup.outputs.server_version_minor }}
+      server_version_patch: ${{ needs.context-setup.outputs.server_version_patch }}
+      server_version_build: ${{ needs.context-setup.outputs.server_version_build }}
+      dart_version:         ${{ needs.context-setup.outputs.server_dart_version }}
+      run_mode:             ${{ needs.context-setup.outputs.run_mode }}
+    secrets: inherit
+
+
+  ############################################################
+  # 5. Build Flutter App
+  ############################################################
+  build-flutter-app:
+    name: Build Flutter Web App
+    needs: [test-force-migration, context-setup]
+    if: ${{ 
+        !cancelled() 
+        && inputs.build_flutter_app == true
+        && (needs.test-force-migration.result == 'success' || needs.test-force-migration.result == 'skipped')
+      }}
+
+    uses: ./.github/workflows/build-web-app.yml
+    with:
+      registry:          ${{ needs.context-setup.outputs.registry }}                       
+      app_name:          ${{ needs.context-setup.outputs.app_name }}
+      flutter_version:   ${{ needs.context-setup.outputs.flutter_version }}
+      app_path:          ${{ needs.context-setup.outputs.app_path }}
+      app_version_full:  ${{ needs.context-setup.outputs.app_version_full }}
+      app_version_major: ${{ needs.context-setup.outputs.app_version_major }}
+      app_version_minor: ${{ needs.context-setup.outputs.app_version_minor }}
+      app_version_patch: ${{ needs.context-setup.outputs.app_version_patch }}
+      app_version_build: ${{ needs.context-setup.outputs.app_version_build }}
+      branch:            ${{ needs.context-setup.outputs.branch }}
+      run_mode:          ${{ needs.context-setup.outputs.run_mode }}
+    secrets: inherit  
+
+
+  ############################################################
+  # 6. Build Windows MSIX
+  ############################################################
+  build-windows-msix:
+    name: Build Windows MSIX
+    needs: [test-force-migration, context-setup]
+    if: ${{ 
+        !cancelled() 
+        && inputs.build_windows_msix == true
+        && (needs.test-force-migration.result == 'success' || needs.test-force-migration.result == 'skipped')
+      }}
+    uses: ./.github/workflows/build-windows-msix.yml
+    permissions:
+      contents: write
+    with:
+      app_path:               ${{ needs.context-setup.outputs.app_path }}
+      flutter_version:        ${{ needs.context-setup.outputs.flutter_version }}
+      app_version_full:       ${{ needs.context-setup.outputs.app_version_full }}
+      app_version_major:      ${{ needs.context-setup.outputs.app_version_major }}
+      app_version_minor:      ${{ needs.context-setup.outputs.app_version_minor }}
+      app_version_patch:      ${{ needs.context-setup.outputs.app_version_patch }}
+      app_version_build:      ${{ needs.context-setup.outputs.app_version_build }}
+      app_display_name:       ${{ needs.context-setup.outputs.app_display_name }}
+      publisher_display_name: ${{ needs.context-setup.outputs.publisher_display_name }}
+      app_name:               ${{ needs.context-setup.outputs.app_name }}
+      app_identifier:         ${{ needs.context-setup.outputs.app_identifier }}
+      msix_app_version_key:   ${{ needs.context-setup.outputs.msix_app_version_key }}
+      version_log_file:       ${{ needs.context-setup.outputs.version_log_file_path }}
+      branch:                 ${{ needs.context-setup.outputs.branch }}
+      run_mode:               ${{ needs.context-setup.outputs.run_mode }}
+    secrets: inherit
+
+
+  ############################################################
+  # 7. Deploy Serverpod
+  ############################################################
+  deploy-serverpod:
+    name: Deploy Serverpod
+    needs: [context-setup, build-serverpod]
+    if: inputs.build_serverpod == true
+    uses: ./.github/workflows/deploy-serverpod.yml
+    permissions:
+      contents: write
+      packages: read
+    with:
+      registry:           ${{ needs.context-setup.outputs.registry }}
+      server_name:        ${{ needs.context-setup.outputs.server_name }}
+      server_path:        ${{ needs.context-setup.outputs.server_path }}
+      server_new_version: ${{ needs.context-setup.outputs.server_version_full }}
+      server_version_key: ${{ needs.context-setup.outputs.server_version_key }}
+      version_log_file:   ${{ needs.context-setup.outputs.version_log_file_path }}
+      checkout_ref:       ${{ needs.context-setup.outputs.branch }}
+      run_mode:           ${{ needs.context-setup.outputs.run_mode }}
+      api_host:           ${{ needs.context-setup.outputs.api_host }}
+    secrets: inherit
+
+
+  ############################################################
+  # 8. Deploy Flutter App
+  ############################################################
+  deploy-app:
+    name: Deploy Flutter Web App
+    needs: [context-setup, build-flutter-app, deploy-serverpod]
+    if: ${{ 
+        !cancelled() 
+        && inputs.build_flutter_app == true
+        && (needs.deploy-serverpod.result == 'success' || needs.deploy-serverpod.result == 'skipped')
+      }}
+    uses: ./.github/workflows/deploy-web-app.yml
+    permissions:
+      contents: write
+      packages: read
+    with:
+      registry:         ${{ needs.context-setup.outputs.registry }}
+      app_name:         ${{ needs.context-setup.outputs.app_name }}
+      app_path:         ${{ needs.context-setup.outputs.app_path }}
+      app_new_version:  ${{ needs.context-setup.outputs.app_version_full }}
+      app_version_key:  ${{ needs.context-setup.outputs.web_app_version_key }}
+      version_log_file: ${{ needs.context-setup.outputs.version_log_file_path }}
+      hostname:         ${{ needs.context-setup.outputs.hostname }}
+      checkout_ref:     ${{ needs.context-setup.outputs.branch }}
+      run_mode:         ${{ needs.context-setup.outputs.run_mode }}
+    secrets: inherit
+

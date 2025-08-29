@@ -1,0 +1,89 @@
+name: "Set Variables"
+description: "Defines and returns used variables"
+
+inputs:
+  app_path:
+    description: "Path to the app"
+    required: true
+  server_path:
+    description: "Path to the server"
+    required: true
+  app_name:
+    description: "Name of the app"
+    required: true
+  server_name:
+    description: "Name of the server"
+    required: true
+  branch:
+    description: "Branch name"
+    required: true
+  registry:
+    description: "Registry for the deployment"
+    required: true
+
+outputs:
+  app_path:
+    description: "Path to the app"
+    value: ${{ inputs.app_path }}
+  server_path:
+    description: "Path to the server"
+    value: ${{ inputs.server_path }}  
+  app_name:
+    description: "Name of the app"
+    value: ${{ inputs.app_name }}
+  server_name:
+    description: "Name of the server"
+    value: ${{ inputs.server_name }}
+  flutter_version:
+    description: "Flutter version"
+    value: ${{ steps.get_flutter_version.outputs.flutter_version }}
+  serverpod_version:
+    description: "Serverpod version"
+    value: ${{ steps.get_serverpod_version.outputs.serverpod_version }}
+  branch:
+    description: "Branch name"
+    value: ${{ inputs.branch }}
+  registry:
+    description: "Registry for the deployment"
+    value: ${{ inputs.registry }}
+
+runs:
+  using: "composite"
+  steps:
+   
+    ############################################################
+    # 1. Get Flutter version from pubspec.yaml
+    ############################################################
+    - id: get_flutter_version
+      name: Get Flutter version from pubspec.yaml
+      shell: bash
+      run: |
+        FILE="${{ inputs.app_path }}/pubspec.yaml"
+        
+        FLUTTER_LINE=$(grep -E '^[[:space:]]*flutter:' "$FILE" || true)
+
+        if [[ $FLUTTER_LINE =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+          echo "flutter_version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+        else
+          echo "::error::Could not read Flutter version from pubspec.yaml."; 
+          exit 1
+        fi
+    
+    
+    ############################################################
+    # 2. Get serverpod version from pubspec.yaml
+    ############################################################
+    - id: get_serverpod_version
+      name: Get serverpod version from pubspec.yaml
+      shell: bash
+      run: |
+        FILE="${{ inputs.server_path }}/pubspec.yaml"
+
+        SERVERPOD_LINE=$(grep -E '^[[:space:]]*serverpod:' "$FILE" || true)
+
+        if [[ $SERVERPOD_LINE =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+          echo "serverpod_version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+        else
+          echo "::error::Could not read serverpod version from pubspec.yaml."; 
+          exit 1
+        fi

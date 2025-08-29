@@ -1,0 +1,308 @@
+name: PR Migration Check 
+
+on:
+  pull_request:
+    branches: [test, staging, prod]
+    types: [opened, synchronize, reopened, labeled]
+
+run-name: "PR #${{ github.event.pull_request.number }}: ${{ github.head_ref }} -> ${{ github.base_ref }}"
+
+permissions:
+  issues: write          
+
+env:
+  app_path: apps/test_app
+  server_path: servers/elbdesk_starter_server
+  app_name: test_app
+  server_name: elbdesk_starter_server
+  branch: refs/pull/${{ github.event.pull_request.number }}/merge  #this is the state of the PR after merge would be done
+  domain: elbdesk.cloud
+  subdomain: starter
+  registry: ghcr.io
+
+
+jobs:
+  ############################################################
+  # 1. Context Setup
+  ############################################################
+  context-setup:
+    name: Context Setup
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      pull-requests: write
+      issues: write
+      actions: write
+      
+    outputs:
+      app_path: ${{ steps.set-variables.outputs.app_path }}
+      server_path: ${{ steps.set-variables.outputs.server_path }}
+      app_name: ${{ steps.set-variables.outputs.app_name }}
+      server_name: ${{ steps.set-variables.outputs.server_name }}
+      branch: ${{ steps.set-variables.outputs.branch }}
+      registry: ${{ steps.set-variables.outputs.registry }}
+      flutter_image_exists: ${{ steps.verify-flutter-version.outputs.flutter_image_exists }}
+      flutter_version: ${{ steps.set-variables.outputs.flutter_version }}
+      serverpod_version: ${{ steps.set-variables.outputs.serverpod_version }}
+    
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.branch }}
+
+      - name: Set variables
+        id: set-variables
+        uses: ./.github/actions/set-variables-for-migration-gate
+        with:
+          app_path: ${{ env.app_path }}
+          server_path: ${{ env.server_path }}
+          app_name: ${{ env.app_name }}
+          server_name: ${{ env.server_name }}
+          branch: ${{ env.branch }}
+          registry: ${{ env.registry }}
+      
+      - name: Log in to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ steps.set-variables.outputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify Flutter version
+        id: verify-flutter-version
+        uses: ./.github/actions/verify-flutter-version
+        with:
+          registry: ${{ steps.set-variables.outputs.registry }}
+          flutter_version: ${{ steps.set-variables.outputs.flutter_version }}
+
+      - name: Comment on PR
+        if: steps.verify-flutter-version.outputs.flutter_image_exists == 'false'
+        uses: actions/github-script@v7
+        with:   
+          script: |
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.payload.pull_request.number,
+              body: "⚠️\n\nImage for Flutter version ${{ steps.set-variables.outputs.flutter_version }} not found.\n\nThis workflow downloads its own Flutter SDK and may therefore take a bit longer."
+            })
+
+      - name: Start seperate Workflow to build and push Flutter image
+        if: steps.verify-flutter-version.outputs.flutter_image_exists == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-flutter-image.yml',
+              ref: 'test', 
+              inputs: {
+                flutter_version: '${{ steps.set-variables.outputs.flutter_version }}',
+                registry: '${{ steps.set-variables.outputs.registry }}',
+                pr_number: String(context.payload.pull_request.number)
+              }
+            })
+
+
+  ############################################################
+  # 2. Run migration (in container)
+  ############################################################       
+  run-migration-in-container:
+    name: Check migration (in container)
+    runs-on: ubuntu-latest
+    needs: context-setup
+    if: needs.context-setup.outputs.flutter_image_exists == 'true'
+    permissions:
+      contents: read
+      packages: read
+      issues: write
+      pull-requests: write
+    
+    container:
+      image: ${{ needs.context-setup.outputs.registry }}/${{ github.repository_owner }}/flutter:${{ needs.context-setup.outputs.flutter_version }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{  secrets.GITHUB_TOKEN }}
+    
+    steps:
+      - name: Checkout PR merge result
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.context-setup.outputs.branch }}
+          fetch-depth: 0
+
+
+      - name: Test migrations
+        id: test-migrations
+        uses: ./.github/actions/test-force-migration
+        with:
+          server_path: ${{ needs.context-setup.outputs.server_path }}
+          serverpod_cli_version: ${{ needs.context-setup.outputs.serverpod_version }}
+
+
+      - name: Comment on PR
+        if: ${{ steps.test-migrations.outputs.needs_force == 'true' && !contains(github.event.pull_request.labels.*.name, 'force-migration') }}
+        uses: actions/github-script@v7
+        with:   
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const logPath = path.join(
+              '${{ needs.context-setup.outputs.server_path }}',  
+              '${{ steps.test-migrations.outputs.log_path }}'     
+            );
+
+            let log = '';
+            try {
+              log = fs.readFileSync(logPath, 'utf8');
+            } catch (e) {
+              log = `(Log konnte nicht gelesen werden: ${e.message})`;
+            }
+
+            const body = [
+              '❌ **Force Migration required**',
+              '',
+              'A force migration is required, when building the server with state of `${{ github.base_ref }}` after this PR was merged.',
+              'This PR might not have introduced breaking changes, but earlier PRs which have not been deployed yet might have.',
+              'Check the logs and set the label **`force-migration`** to accept the force migration.',
+              '',
+              '<details><summary>Log</summary>',
+              '',
+              '```',
+              log.slice(0, 6000),
+              '```',
+              '',
+              '</details>'
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.payload.pull_request.number,
+              body: body
+            })
+
+
+      - name: Fail if force needed and label missing
+        if: ${{ steps.test-migrations.outputs.needs_force == 'true' && !contains(github.event.pull_request.labels.*.name, 'force-migration') }}
+        run: |
+          echo "::error::Force-Migration required, but label 'force-migration' is missing."
+          exit 1
+
+
+      # - name: Wait for force-migration approval
+      #   if: steps.test-migrations.outputs.needs_force == 'true'
+      #   id: wait_approval
+      #   uses: trstringer/manual-approval@v1
+      #   timeout-minutes: 60
+      #   with:
+      #     secret: ${{ secrets.GITHUB_TOKEN }}
+      #     approvers: luca-virnich        
+      #     minimum-approvals: 1
+      #     issue-title: "Force migration approval for PR #${{ github.event.pull_request.number }}"
+      #     issue-body-file-path: ${{ needs.context-setup.outputs.server_path }}/${{ steps.test-migrations.outputs.log_path }}
+      #     exclude-workflow-initiator-as-approver: false
+      #     fail-on-denial: true
+
+
+  ############################################################
+  # 3. Run migration (on runner)
+  ############################################################       
+  run-migration-on-runner:
+    name: Check migration (on runner)
+    runs-on: ubuntu-latest
+    needs: context-setup
+    if: needs.context-setup.outputs.flutter_image_exists == 'false'
+    permissions:
+      contents: write
+      packages: write
+      pull-requests: write
+      issues: write
+      actions: write
+
+    steps:
+      - name: Checkout PR merge result
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.context-setup.outputs.branch }}
+
+      - name: Set up Flutter ${{ needs.context-setup.outputs.flutter_version }}
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ needs.context-setup.outputs.flutter_version }}
+          channel: stable
+
+      - name: Test migrations
+        id: test-migrations
+        uses: ./.github/actions/test-force-migration
+        with:
+          server_path: ${{ needs.context-setup.outputs.server_path }}
+          serverpod_cli_version: ${{ needs.context-setup.outputs.serverpod_version }}
+
+
+
+      - name: Comment on PR
+        if: ${{ steps.test-migrations.outputs.needs_force == 'true' && !contains(github.event.pull_request.labels.*.name, 'force-migration') }}
+        uses: actions/github-script@v7
+        with:   
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const logPath = path.join(
+              '${{ needs.context-setup.outputs.server_path }}',  
+              '${{ steps.test-migrations.outputs.log_path }}'     
+            );
+
+            let log = '';
+            try {
+              log = fs.readFileSync(logPath, 'utf8');
+            } catch (e) {
+              log = `(Log konnte nicht gelesen werden: ${e.message})`;
+            }
+
+            const body = [
+              '❌ **Force Migration required**',
+              '',
+              'A force migration is required, when building the server with state of `${{ github.base_ref }}` after this PR was merged.',
+              'This PR might not have introduced breaking changes, but earlier PRs which have not been deployed yet might have.',
+              'Check the logs and set the label **`force-migration`** to accept the force migration.',
+              '',
+              '<details><summary>Log</summary>',
+              '',
+              '```',
+              log.slice(0, 6000),
+              '```',
+              '',
+              '</details>'
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.payload.pull_request.number,
+              body: body
+            })
+
+
+      - name: Fail if force needed and label missing
+        if: ${{ steps.test-migrations.outputs.needs_force == 'true' && !contains(github.event.pull_request.labels.*.name, 'force-migration') }}
+        run: |
+          echo "::error::Force-Migration required, but label 'force-migration' is missing."
+          exit 1
+
+
+      # - name: Wait for force-migration approval
+      #   if: steps.test-migrations.outputs.needs_force == 'true'
+      #   id: wait_approval
+      #   uses: trstringer/manual-approval@v1
+      #   timeout-minutes: 60
+      #   with:
+      #     secret: ${{ secrets.GITHUB_TOKEN }}
+      #     approvers: luca-virnich        
+      #     minimum-approvals: 1
+      #     issue-title: "Force migration approval for PR #${{ github.event.pull_request.number }}"
+      #     issue-body-file-path: ${{ needs.context-setup.outputs.server_path }}/${{ steps.test-migrations.outputs.log_path }}  
+      #     exclude-workflow-initiator-as-approver: false
+      #     fail-on-denial: true

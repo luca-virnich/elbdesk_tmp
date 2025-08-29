@@ -1,0 +1,57 @@
+name: "Commit & Push Migrations"
+description: "Commits and pushes migrations to the repository. It is expected that the migrations are already created."
+
+inputs:
+  server_path:
+    description: "Path to the server"
+    required: true
+  branch:
+    description: "Branch to push to"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    ############################################################
+    # 1. Mark flutter and repo as safe for git
+    ############################################################
+    - name: Mark flutter and repo as safe for git
+      shell: bash
+      env:
+        REPO_ROOT: ${{ github.workspace }}
+      run: |
+        git config --global --add safe.directory /usr/local/flutter
+        git config --global --add safe.directory $REPO_ROOT
+
+
+    ############################################################
+    # 2. Get bot user name & email
+    ############################################################
+    - name: Get Bot User Name & Email
+      id: bot-details
+      uses: raven-actions/bot-details@v1
+      with:
+        bot-slug-name: github-actions
+
+
+    ############################################################
+    # 3. Commit and push migrations
+    ############################################################
+    - name: Commit & Push migrations
+      working-directory: ${{ github.workspace }}
+      shell: bash
+      run: |
+        git config user.name "${{ steps.bot-details.outputs.name }}"
+        git config user.email "${{ steps.bot-details.outputs.email }}"
+
+        git add -f -A -- "${{ inputs.server_path }}/migrations"
+
+        if git diff --staged --quiet; then
+          echo "No migrations to commit"
+          echo "::notice::No migrations to commit."
+        else
+          git commit -m "Auto-generated database migrations [skip ci]"
+          git push origin HEAD:${{ inputs.branch }}
+          echo "::notice::Pushed migrations to ${{ inputs.branch }}."
+        fi

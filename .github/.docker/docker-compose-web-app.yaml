@@ -1,0 +1,26 @@
+
+services:
+  web:
+    image: ${REGISTRY}/${GHCR_ORG}/${RUN_MODE}-${APP_NAME}:latest        # e.g. ghcr.io/luca-virnich/test_app:latest
+    container_name: ${APP_NAME}-${RUN_MODE}              # test_app-production
+    restart: always
+
+    # ─── Traefik routing ──────────────────────────────────────────────────
+    labels:
+      - "traefik.enable=true"
+
+      # Route: starter.elbdesk.cloud  →  this container
+      - "traefik.http.routers.${APP_NAME}-${RUN_MODE}.rule=Host(`${APP_HOST}`)"
+      - "traefik.http.routers.${APP_NAME}-${RUN_MODE}.entrypoints=websecure"
+      - "traefik.http.routers.${APP_NAME}-${RUN_MODE}.tls.certresolver=myresolver"
+
+      # Service definition: expose container’s port 80 to Traefik
+      - "traefik.http.services.${APP_NAME}-${RUN_MODE}.loadbalancer.server.port=80"
+
+    networks:
+      - serverpod-network
+
+# ─── External network (created by the Traefik stack) ─────────────────────
+networks:
+  serverpod-network:
+    external: true

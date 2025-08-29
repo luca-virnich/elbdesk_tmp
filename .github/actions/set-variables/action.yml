@@ -1,0 +1,381 @@
+name: "Set Variables"
+description: "Defines and returns used variables"
+
+inputs:
+  app_path:                 { required: true, description: "Path to the app" }
+  server_path:              { required: true, description: "Path to the server" }
+  app_display_name:         { required: true, description: "Display name of the app" }
+  publisher_display_name:   { required: true, description: "Display name of the publisher" }
+  app_name:                 { required: true, description: "Name of the app" }
+  server_name:              { required: true, description: "Name of the server" }
+  app_identifier:           { required: true, description: "App identifier" }
+  subdomain:                { required: true, description: "Subdomain for the deployment" }
+  domain:                   { required: true, description: "Domain for the deployment" }
+  branch:                   { required: true, description: "Branch name" }
+  app_version:              { required: true, description: "App version" }
+  server_version:           { required: true, description: "Server version" }
+  registry:                 { required: true, description: "Registry for the deployment" }
+  build_serverpod:          { required: true, description: "Should build and deploy serverpod?" }
+  build_flutter_app:        { required: true, description: "Should build and deploy flutter app?" }
+  build_windows_msix:       { required: true, description: "Should build and deploy windows msix?" }
+  version_log_test_path:    { required: true, description: "Path to the test log file" }
+  version_log_staging_path: { required: true, description: "Path to the staging log file" }
+  version_log_prod_path:    { required: true, description: "Path to the prod log file" }
+  web_app_version_key:      { required: true, description: "Key for the web app version" }
+  msix_app_version_key:     { required: true, description: "Key for the msix app version" }
+  server_version_key:       { required: true, description: "Key for the server version" }
+
+outputs:
+  app_path:
+    description: "Path to the app"
+    value: ${{ inputs.app_path }}
+  server_path:
+    description: "Path to the server"
+    value: ${{ inputs.server_path }}  
+  app_display_name:
+    description: "Display name of the app"
+    value: ${{ steps.compute_app_display_name.outputs.app_display_name }}
+  publisher_display_name:
+    description: "Display name of the publisher"
+    value: ${{ inputs.publisher_display_name }}
+  app_name:
+    description: "Name of the app"
+    value: ${{ inputs.app_name }}
+  server_name:
+    description: "Name of the server"
+    value: ${{ inputs.server_name }}
+  app_identifier:
+    description: "App identifier"
+    value: ${{ steps.compute_app_identifier.outputs.app_identifier }}
+  hostname:
+    description: "Hostname for the deployment"
+    value: ${{ steps.get_hostname.outputs.hostname }}
+  api_host:
+    description: "API host for the deployment"
+    value: ${{ steps.get_api_host.outputs.api_host }}
+  flutter_version:
+    description: "Flutter version"
+    value: ${{ steps.get_flutter_version.outputs.flutter_version }}
+  server_dart_version:
+    description: "Dart version of the server"
+    value: ${{ steps.get_dart_version.outputs.dart_version }}
+  serverpod_version:
+    description: "Serverpod version"
+    value: ${{ steps.get_serverpod_version.outputs.serverpod_version }}
+  branch:
+    description: "Branch name"
+    value: ${{ inputs.branch }}
+  run_mode:
+    description: "Run mode"
+    value: ${{ steps.get_run_mode.outputs.run_mode }}
+  app_version_full:
+    description: "App version full"
+    value: ${{ inputs.app_version }}
+  app_version_major:
+    description: "App version major"
+    value: ${{ steps.format_app_version.outputs.app_version_major }}
+  app_version_minor:
+    description: "App version minor"
+    value: ${{ steps.format_app_version.outputs.app_version_minor }}
+  app_version_patch:
+    description: "App version patch"
+    value: ${{ steps.format_app_version.outputs.app_version_patch }}
+  app_version_build:
+    description: "App version build"
+    value: ${{ steps.format_app_version.outputs.app_version_build }}
+  server_version_full:
+    description: "Server version full"
+    value: ${{ inputs.server_version }}
+  server_version_major:
+    description: "Server version major"
+    value: ${{ steps.format_server_version.outputs.server_version_major }}
+  server_version_minor:
+    description: "Server version minor"
+    value: ${{ steps.format_server_version.outputs.server_version_minor }}
+  server_version_patch:
+    description: "Server version patch"
+    value: ${{ steps.format_server_version.outputs.server_version_patch }}
+  server_version_build:
+    description: "Server version build"
+    value: ${{ steps.format_server_version.outputs.server_version_build }}  
+  registry:
+    description: "Registry for the deployment"
+    value: ${{ inputs.registry }}
+  version_log_file_path:
+    description: "Path to the version log file"
+    value: ${{ steps.compute_version_log_file.outputs.version_log_file }}
+  web_app_version_key:
+    description: "Key for the web app version in version log"
+    value: ${{ inputs.web_app_version_key }}
+  msix_app_version_key:
+    description: "Key for the msix app version in version log"
+    value: ${{ inputs.msix_app_version_key }}
+  server_version_key:
+    description: "Key for the server version in version log"
+    value: ${{ inputs.server_version_key }}
+
+runs:
+  using: "composite"
+  steps:
+   
+    ############################################################
+    # 1. Get hostname from branch name
+    ############################################################
+    - name: Get hostname from branch name
+      id: get_hostname
+      shell: bash
+      run: |
+          case "${{ inputs.branch }}" in
+            test)      echo "hostname=test.${{ inputs.subdomain }}.${{ inputs.domain }}"    >> $GITHUB_OUTPUT ;;
+            staging)   echo "hostname=staging.${{ inputs.subdomain }}.${{ inputs.domain }}" >> $GITHUB_OUTPUT ;;
+            prod)      echo "hostname=${{ inputs.subdomain }}.${{ inputs.domain }}"         >> $GITHUB_OUTPUT ;;
+            *)         echo "::error::Branch '${{ inputs.branch }}' is not deployable."; exit 1 ;;
+          esac
+
+
+    ############################################################
+    # 2. Get run mode from branch name
+    ############################################################
+    - name: Get run mode from branch name
+      id: get_run_mode
+      shell: bash
+      run: |
+          case "${{ inputs.branch }}" in
+            test)      echo "run_mode=test"       >> $GITHUB_OUTPUT ;;
+            staging)   echo "run_mode=staging"    >> $GITHUB_OUTPUT ;;
+            prod)      echo "run_mode=production" >> $GITHUB_OUTPUT ;;
+            *)         echo "::error::Branch '${{ inputs.branch }}' has no run mode."; exit 1 ;;
+          esac
+
+
+    ############################################################
+    # 3. Get api host from branch name
+    ############################################################
+    - name: Get api host from branch name
+      id: get_api_host
+      shell: bash
+      run: |
+        case "${{ inputs.branch }}" in
+          test)      echo "api_host=test.api.${{ inputs.subdomain }}.${{ inputs.domain }}"    >> $GITHUB_OUTPUT ;;
+          staging)   echo "api_host=staging.api.${{ inputs.subdomain }}.${{ inputs.domain }}" >> $GITHUB_OUTPUT ;;
+          prod)      echo "api_host=production.api.${{ inputs.subdomain }}.${{ inputs.domain }}"  >> $GITHUB_OUTPUT ;;
+          *)         echo "::error::Branch '${{ inputs.branch }}' has no api host."; exit 1 ;;
+        esac
+    
+    
+    ############################################################
+    # 3. Get Flutter version from pubspec.yaml
+    ############################################################
+    - id: get_flutter_version
+      name: Get Flutter version from pubspec.yaml
+      shell: bash
+      run: |
+        FILE="${{ inputs.app_path }}/pubspec.yaml"
+        
+        FLUTTER_LINE=$(grep -E '^[[:space:]]*flutter:' "$FILE" || true)
+
+        if [[ $FLUTTER_LINE =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+          echo "flutter_version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+        else
+          echo "::error::Could not read Flutter version from pubspec.yaml."; 
+          exit 1
+        fi
+
+
+    ############################################################
+    # 4. Get serverpod version from pubspec.yaml
+    ############################################################
+    - id: get_serverpod_version
+      name: Get serverpod version from pubspec.yaml
+      shell: bash
+      run: |
+        FILE="${{ inputs.server_path }}/pubspec.yaml"
+
+        SERVERPOD_LINE=$(grep -E '^[[:space:]]*serverpod:' "$FILE" || true)
+
+        if [[ $SERVERPOD_LINE =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+          echo "serverpod_version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+        else
+          echo "::error::Could not read serverpod version from pubspec.yaml."; 
+          exit 1
+        fi
+
+
+    ############################################################
+    # 4. Get Dart version from server pubspec.yaml
+    ############################################################
+    - id: get_dart_version
+      name: Get Dart version from server pubspec.yaml
+      shell: bash
+      run: |
+        FILE="${{ inputs.server_path }}/pubspec.yaml"
+
+        SDK_LINE=$(awk '/^environment:/{flag=1;next} /^[^[:space:]]/{flag=0} flag && /^[[:space:]]*sdk:/{print; exit}' "$FILE" || true)
+
+        if [ -z "$SDK_LINE" ]; then
+          echo "::error::Could not find 'environment: sdk:' in $FILE"
+          exit 1
+        fi
+
+        CONSTRAINT=$(printf '%s\n' "$SDK_LINE" | sed -E 's/^[[:space:]]*sdk:[[:space:]]*//; s/"//g; s/'"'"'//g')
+
+        if [[ $CONSTRAINT =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+          DART_VERSION="${BASH_REMATCH[1]}"
+        elif [[ $CONSTRAINT =~ ([0-9]+\.[0-9]+) ]]; then
+          DART_VERSION="${BASH_REMATCH[1]}.0"
+        else
+          echo "::error::Could not parse Dart version from: $CONSTRAINT"
+          exit 1
+        fi
+
+        echo "dart_version=$DART_VERSION" >> "$GITHUB_OUTPUT"
+        echo "Extracted Dart version: $DART_VERSION"
+
+        echo ${{ inputs.build_serverpod }}
+        echo ${{ inputs.build_flutter_app }}
+        echo ${{ inputs.build_windows_msix }}
+              
+
+    ############################################################
+    # 5. Format the app version, exit if invalid
+    ############################################################
+    - id: format_app_version
+      name: Format the app version
+      if: ${{ inputs.build_flutter_app == 'true' || inputs.build_windows_msix == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        VER="${{ inputs.app_version }}"
+
+        if [[ "$VER" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\+([0-9]+)$ ]]; then
+          MAJOR="${BASH_REMATCH[1]}"
+          MINOR="${BASH_REMATCH[2]}"
+          PATCH="${BASH_REMATCH[3]}"
+          BUILD="${BASH_REMATCH[4]}"
+
+          echo "app_version_major=$MAJOR" >> "$GITHUB_OUTPUT"
+          echo "app_version_minor=$MINOR" >> "$GITHUB_OUTPUT"
+          echo "app_version_patch=$PATCH" >> "$GITHUB_OUTPUT"
+          echo "app_version_build=$BUILD" >> "$GITHUB_OUTPUT"
+        else
+          echo "::error::Invalid app_version: '$VER'. Expected format 'X.Y.Z+N' (e.g., 1.2.3+4)."
+          exit 1
+        fi
+
+
+    ############################################################
+    # 6. Format the server version, exit if invalid
+    ############################################################
+    - id: format_server_version
+      name: Format the server version
+      if: ${{ inputs.build_serverpod == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        VER="${{ inputs.server_version }}"
+
+        if [[ "$VER" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\+([0-9]+)$ ]]; then
+          MAJOR="${BASH_REMATCH[1]}"
+          MINOR="${BASH_REMATCH[2]}"
+          PATCH="${BASH_REMATCH[3]}"
+          BUILD="${BASH_REMATCH[4]}"
+
+          echo "server_version_major=$MAJOR" >> "$GITHUB_OUTPUT"
+          echo "server_version_minor=$MINOR" >> "$GITHUB_OUTPUT"
+          echo "server_version_patch=$PATCH" >> "$GITHUB_OUTPUT"
+          echo "server_version_build=$BUILD" >> "$GITHUB_OUTPUT"
+        else
+          echo "::error::Invalid server_version: '$VER'. Expected format 'X.Y.Z+N' (e.g., 1.2.3+4)."
+          exit 1
+        fi
+
+
+    ############################################################
+    # 7) Compute app identifier (no '.production' suffix)
+    ############################################################
+    - name: Compute app identifier
+      id: compute_app_identifier
+      shell: bash
+      env:
+        BASE_ID: ${{ inputs.app_identifier }}
+        RUN_MODE: ${{ steps.get_run_mode.outputs.run_mode }}
+      run: |
+        set -euo pipefail
+        case "${RUN_MODE,,}" in
+          production) id="$BASE_ID" ;;     
+          staging)    id="$BASE_ID.staging" ;;
+          test)       id="$BASE_ID.test" ;;
+          *)
+            echo "::error::Unsupported run_mode '${RUN_MODE}'."
+            exit 1
+            ;;
+        esac
+        echo "app_identifier=$id" >> "$GITHUB_OUTPUT"
+        echo "App identifier: $id"
+    
+    
+    ############################################################
+    # 8) Compute app display name
+    ############################################################
+    - name: Compute app display name
+      id: compute_app_display_name
+      shell: bash
+      env:
+        BASE: ${{ inputs.app_display_name }}
+        RUN_MODE: ${{ steps.get_run_mode.outputs.run_mode }}
+      run: |
+        set -euo pipefail
+        case "${RUN_MODE,,}" in
+          production) display_name="$BASE" ;;     
+          staging)    display_name="$BASE (Staging)" ;;
+          test)       display_name="$BASE (Test)" ;;
+          *)
+            echo "::error::Unsupported run_mode '${RUN_MODE}'."
+            exit 1
+            ;;
+        esac
+        echo "app_display_name=$display_name" >> "$GITHUB_OUTPUT"
+        echo "App display name: $display_name"
+
+
+    ############################################################
+    # 8) Compute version log file
+    ############################################################
+    - name: Compute version log file
+      id: compute_version_log_file
+      shell: bash
+      env:
+        TEST_PATH: ${{ inputs.version_log_test_path }}
+        STAGING_PATH: ${{ inputs.version_log_staging_path }}
+        PROD_PATH: ${{ inputs.version_log_prod_path }}
+        RUN_MODE: ${{ steps.get_run_mode.outputs.run_mode }}
+      run: |
+        set -euo pipefail
+        case "${RUN_MODE,,}" in
+          production) version_log_file="$PROD_PATH" ;;     
+          staging)    version_log_file="$STAGING_PATH" ;;
+          test)       version_log_file="$TEST_PATH" ;;
+          *)
+            echo "::error::Unsupported run_mode '${RUN_MODE}'."
+            exit 1
+            ;;
+        esac
+        echo "version_log_file=$version_log_file" >> "$GITHUB_OUTPUT"
+        echo "Version log file: $version_log_file"
+
+
+    ############################################################
+    # 7. Check if the versions match the policy
+    ############################################################
+    - name: Check Version Matching
+      uses: ./.github/actions/check-version-matching
+      with:
+        run_mode:                 ${{ steps.get_run_mode.outputs.run_mode }}
+        version_log_test_path:    ${{ inputs.version_log_test_path }}
+        version_log_staging_path: ${{ inputs.version_log_staging_path }}
+        version_log_prod_path:    ${{ inputs.version_log_prod_path }}
+        app_version:              ${{ inputs.app_version }}
+        server_version:           ${{ inputs.server_version }}
+        build_serverpod:          ${{ inputs.build_serverpod }}
+        build_flutter_app:        ${{ inputs.build_flutter_app }}
+        build_windows_msix:       ${{ inputs.build_windows_msix }}

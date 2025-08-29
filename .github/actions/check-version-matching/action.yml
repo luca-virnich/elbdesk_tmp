@@ -1,0 +1,151 @@
+name: "Check Version Matching"
+description: "Enforces same MAJOR.MINOR across app_web, app_msix, server after this run."
+
+inputs:
+  run_mode:                 { required: true, description: "Run mode" }
+  version_log_test_path:    { required: true, description: "Path to the test log file" }
+  version_log_staging_path: { required: true, description: "Path to the staging log file" }
+  version_log_prod_path:    { required: true, description: "Path to the prod log file" }
+  app_version:              { required: false, description: "App Version in format 1.2.3+4" }
+  server_version:           { required: false, description: "Server Version in format 1.2.3+4" }
+  build_serverpod:          { required: true, description: "Build Serverpod" }
+  build_flutter_app:        { required: true, description: "Build Flutter App" }
+  build_windows_msix:       { required: true, description: "Build Windows MSIX" }
+
+
+
+runs:
+  using: "composite"
+  steps:
+    # 1) Pfad + aktuelle Versionen einlesen
+    - name: Collect current context
+      id: collect
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        # a) Datei je run_mode
+        MODE="$(echo "${{ inputs.run_mode }}" | tr '[:upper:]' '[:lower:]')"
+        case "$MODE" in
+          test)        FILE="${{ inputs.version_log_test_path }}";;
+          staging)     FILE="${{ inputs.version_log_staging_path }}";;
+          production|prod) FILE="${{ inputs.version_log_prod_path }}";;
+          *) echo "::error::Unsupported run_mode: $MODE"; exit 1;;
+        esac
+        [ -f "$FILE" ] || { echo "::error::Version log '$FILE' not found"; exit 1; }
+        echo "file=$FILE" >> "$GITHUB_OUTPUT"
+
+        # b) Werte aus YAML (Top-Level) lesen
+        kv () { awk -F': *' -v k="$1" '$1==k {print $2; exit}' "$FILE" | tr -d '"' || true; }
+        APP_WEB_OLD="$(kv app_web_version)"
+        APP_MSIX_OLD="$(kv app_msix_version)"
+        SERVER_OLD="$(kv server_version)"
+        echo "app_web_old=$APP_WEB_OLD"   >> "$GITHUB_OUTPUT"
+        echo "app_msix_old=$APP_MSIX_OLD" >> "$GITHUB_OUTPUT"
+        echo "server_old=$SERVER_OLD"     >> "$GITHUB_OUTPUT"
+
+    # 2) Ein einziger, klarer Check
+    - name: Enforce MAJOR.MINOR policy
+      shell: bash
+      env:
+        BUILD_APP:    ${{ inputs.build_flutter_app }}
+        BUILD_MSIX:   ${{ inputs.build_windows_msix }}
+        BUILD_SRV:    ${{ inputs.build_serverpod }}
+        APP_NEW:      ${{ inputs.app_version }}
+        SERVER_NEW:   ${{ inputs.server_version }}
+        APP_WEB_OLD:  ${{ steps.collect.outputs.app_web_old }}
+        APP_MSIX_OLD: ${{ steps.collect.outputs.app_msix_old }}
+        SERVER_OLD:   ${{ steps.collect.outputs.server_old }}
+      run: |
+        set -euo pipefail
+
+        # "1.2.3+4" -> "1.2"
+        mm () { v="$1"; base="${v%%+*}"; IFS='.' read -r MA MI _ <<< "$base"; echo "${MA}.${MI}"; }
+        verb () { [ "$1" = "true" ] && echo "was set to" || echo "is currently at"; }
+        cap () { printf "%s" "$1" | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}'; }
+
+        # Finalstände (neu wenn gebaut, sonst aus Log)
+        WEB_FINAL="$APP_WEB_OLD";   [ "$BUILD_APP"  = "true" ] && WEB_FINAL="$APP_NEW"
+        MSIX_FINAL="$APP_MSIX_OLD"; [ "$BUILD_MSIX" = "true" ] && MSIX_FINAL="$APP_NEW"
+        SRV_FINAL="$SERVER_OLD";    [ "$BUILD_SRV"  = "true" ] && SRV_FINAL="$SERVER_NEW"
+
+        # Fehlende Pflichtwerte, wenn Teil nicht gebaut wird
+        [ "$BUILD_APP"  = "true" ] || [ -n "$WEB_FINAL"  ] || { echo "::error::Missing app_web_version in log";  exit 1; }
+        [ "$BUILD_MSIX" = "true" ] || [ -n "$MSIX_FINAL" ] || { echo "::error::Missing app_msix_version in log"; exit 1; }
+        [ "$BUILD_SRV"  = "true" ] || [ -n "$SRV_FINAL"  ] || { echo "::error::Missing server_version in log";  exit 1; }
+
+        # MM bilden
+        WMM=""; [ -n "$WEB_FINAL"  ] && WMM="$(mm "$WEB_FINAL")"
+        XMM=""; [ -n "$MSIX_FINAL" ] && XMM="$(mm "$MSIX_FINAL")"
+        SMM=""; [ -n "$SRV_FINAL"  ] && SMM="$(mm "$SRV_FINAL")"
+
+        # Verben für Message
+        WVERB="$(verb "$BUILD_APP")"
+        XVERB="$(verb "$BUILD_MSIX")"
+        SVERB="$(verb "$BUILD_SRV")"
+
+        # Referenz: bevorzugt neu gesetzte Artefakte, sonst erstes vorhandenes
+        REF_NAME=""; REF_MM=""; REF_FULL=""; REF_VERB=""
+
+        set_ref () {
+          case "$1" in
+            web)
+              REF_NAME="web"; REF_MM="$WMM"; REF_FULL="$WEB_FINAL"
+              REF_VERB=$([ "$BUILD_APP" = "true" ] && echo "was set to" || echo "is currently at")
+              ;;
+            msix)
+              REF_NAME="msix"; REF_MM="$XMM"; REF_FULL="$MSIX_FINAL"
+              REF_VERB=$([ "$BUILD_MSIX" = "true" ] && echo "was set to" || echo "is currently at")
+              ;;
+            server)
+              REF_NAME="server"; REF_MM="$SMM"; REF_FULL="$SRV_FINAL"
+              REF_VERB=$([ "$BUILD_SRV" = "true" ] && echo "was set to" || echo "is currently at")
+              ;;
+          esac
+        }
+
+        if   [ "$BUILD_APP"  = "true" ] && [ -n "$WMM" ]; then set_ref web
+        elif [ "$BUILD_MSIX" = "true" ] && [ -n "$XMM" ]; then set_ref msix
+        elif [ "$BUILD_SRV"  = "true" ] && [ -n "$SMM" ]; then set_ref server
+        elif [ -n "$WMM" ]; then set_ref web
+        elif [ -n "$XMM" ]; then set_ref msix
+        else set_ref server
+        fi
+
+        # Helper: hole FULL/VERB/MM für eine bestimmte Komponente
+        get_side () {
+          local name="$1"
+          case "$name" in
+            web)
+              echo "$WEB_FINAL|$WMM|$([ "$BUILD_APP" = "true" ] && echo 'was set to' || echo 'is currently at')"
+              ;;
+            msix)
+              echo "$MSIX_FINAL|$XMM|$([ "$BUILD_MSIX" = 'true' ] && echo 'was set to' || echo 'is currently at')"
+              ;;
+            server)
+              echo "$SRV_FINAL|$SMM|$([ "$BUILD_SRV" = 'true' ] && echo 'was set to' || echo 'is currently at')"
+              ;;
+          esac
+        }
+
+        # Ersten Konflikt melden (nur EIN Fehler, schön formuliert)
+        report_if_mismatch () {
+          local other="$1"
+          IFS='|' read -r OTHER_FULL OTHER_MM OTHER_VERB < <(get_side "$other")
+          if [ -n "$OTHER_MM" ] && [ "$OTHER_MM" != "$REF_MM" ]; then
+            # z.B.: "Web was set to 1.3.3+5 but Server is currently at 1.2.1+5"
+            printf '::error::%s %s %s but %s %s %s\n' \
+              "$(echo "$REF_NAME" | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')" \
+              "$REF_VERB" "$REF_FULL" \
+              "$(echo "$other"    | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')" \
+              "$OTHER_VERB" "$OTHER_FULL"
+            exit 1
+          fi
+        }
+
+        # Reihenfolge: web -> msix -> server (überspringt die Referenz selbst)
+        [ "$REF_NAME" != "web"    ] && report_if_mismatch web
+        [ "$REF_NAME" != "msix"   ] && report_if_mismatch msix
+        [ "$REF_NAME" != "server" ] && report_if_mismatch server
+
+        echo "OK: Unified MAJOR.MINOR=$REF_MM"

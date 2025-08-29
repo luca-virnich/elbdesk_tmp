@@ -1,0 +1,52 @@
+networks:
+  serverpod-network:
+    name: serverpod-network       
+
+services:
+  traefik:
+    image: traefik:v3.0
+    restart: always
+
+    command:
+      - "--api.dashboard=true"
+      - "--log.level=INFO"
+      - "--providers.docker=true"
+      - "--providers.docker.network=serverpod-network"
+
+      # EntryPoints
+      # with 'sudo setcap cap_net_bind_service=ep /home/github-actions/bin/rootlesskit' docker can bind to ports < 1024
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+
+      # ACME (Let's Encrypt)
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+
+      #  HTTP → HTTPS Redirect
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      - "/run/user/1000/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt"
+
+    # Optional but handy: secure the dashboard on its own sub-domain
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.starter.elbdesk.cloud`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+      # simple basic-auth 
+      - 'traefik.http.middlewares.traefik-auth.basicauth.users=system:$$apr1$$.OwI76zG$$KLyhzl9FzAxPCCNoFcL9N.'
+      - "traefik.http.routers.traefik.middlewares=traefik-auth"
+
+    networks: [ serverpod-network ]
+
+volumes:
+  letsencrypt:     
