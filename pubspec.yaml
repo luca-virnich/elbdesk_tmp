@@ -13,7 +13,6 @@ workspace:
   - packages/elbdesk_window_manager
   - packages/elbdesk_platform_info
   - servers/elbdesk_client
-  - servers/elbdesk_server
   # - servers/elbdesk_server_core/elbdesk_server_core_server
   # - servers/elbdesk_server_core/elbdesk_server_core_client
   - apps/elbdesk_app
